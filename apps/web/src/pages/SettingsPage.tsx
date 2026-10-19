@@ -94,9 +94,9 @@ function CustomFields() {
           </Button>
         </div>
       ))}
-      <h4 className="mb-2 mt-5">新增字段</h4>
-      <div className="grid grid-cols-4 gap-2">
-        <Field label="字段键（小写字母/数字/下划线）">
+      <h4 className="mb-3 mt-6 text-base font-extrabold">新增字段</h4>
+      <div className="grid grid-cols-4 items-start gap-3">
+        <Field label="字段键" hint="小写字母、数字、下划线">
           <TextInput
             value={form.key}
             onChange={(e) => setForm({ ...form, key: e.target.value })}
