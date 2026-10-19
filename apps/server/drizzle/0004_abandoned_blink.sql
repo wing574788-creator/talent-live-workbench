@@ -1,0 +1,1 @@
+ALTER TABLE `pending_changes` ADD `warnings` text;

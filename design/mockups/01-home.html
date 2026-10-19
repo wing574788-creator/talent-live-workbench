@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>首页 · 页面布局原型</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0E6B5E}a:hover{color:#0A4F45}
+</style>
+</head>
+<body>
+<!-- 静态布局原型：数据均为示例，仅用于说明布局与信息层级。 -->
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; background: #F6F5F1; color: #1C1B19; font-family: 'Noto Sans SC', sans-serif; font-size: 14px; line-height: 1.55">
+<nav aria-label="主导航" style="flex: 1 1 216px; box-sizing: border-box; padding: 24px 16px; background: #FFFFFF; border-right: 1px solid #E3E1DA; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 16px; font-weight: 700; padding: 4px 12px 20px">达人直播工作台</div>
+<a href="01-home.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #0E6B5E; background: #E3F0ED; font-weight: 500">首页</a>
+<a href="02-cooperations.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">合作</a>
+<a href="03-influencer-samples.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">达人</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">联系人</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">商品</a>
+<a href="04-samples-return.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">寄样</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">审核<span style="min-width: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 11px; background: #B4410F; color: #FFFFFF; font-size: 12px; text-align: center">2</span></a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">导入</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">设置</a>
+</nav>
+<main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+<div>
+<h1 style="margin: 0; font-size: 24px; font-weight: 700">今天有 6 位达人待跟进</h1>
+<p style="margin: 6px 0 0; color: #5E5B54">10月18日 周日 · 摘要生成于 09:02 · <a href="#">重新生成</a></p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<input type="search" aria-label="搜索达人、商品、合作" placeholder="搜索达人、商品、合作" style="width: 260px; min-height: 44px; box-sizing: border-box; padding: 0 14px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px">
+<div style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 16px 20px">
+<div style="color: #5E5B54">今日待跟进</div>
+<div style="font-size: 30px; font-weight: 700; margin-top: 4px">6</div>
+<div style="color: #B4410F; font-size: 13px">其中 2 位已逾期</div>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 16px 20px">
+<div style="color: #5E5B54">在外样品</div>
+<div style="font-size: 30px; font-weight: 700; margin-top: 4px">23 件</div>
+<div style="color: #B4410F; font-size: 13px">4 件逾期未寄回</div>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 16px 20px">
+<div style="color: #5E5B54">近 7 天开播</div>
+<div style="font-size: 30px; font-weight: 700; margin-top: 4px">3 场</div>
+<div style="color: #5E5B54; font-size: 13px">1 场佣金未确认</div>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 16px 20px">
+<div style="color: #5E5B54">待审核改动</div>
+<div style="font-size: 30px; font-weight: 700; margin-top: 4px">2</div>
+<div style="color: #5E5B54; font-size: 13px"><a href="#">去审核</a></div>
+</div>
+</div>
+<section aria-label="AI 摘要" style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 18px 20px">
+<div style="font-size: 13px; font-weight: 500; color: #0E6B5E">AI 摘要</div>
+<ul style="margin: 8px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px">
+<li>达人 A、达人 D 的跟进已逾期 2 天，上次都停在"等经纪人确认档期"。</li>
+<li>达人 C 手上有 3 件样衣超过应寄回日期 5 天，且上一次退回有 1 件污渍。</li>
+<li>10月21日 达人 B 开播，A003 的佣金还没确认。</li>
+</ul>
+</section>
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+<section aria-label="今日待跟进" style="flex: 3 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 18px 20px">
+<h2 style="margin: 0 0 12px; font-size: 16px">今日待跟进</h2>
+<div style="overflow-x: auto">
+<table style="width: 100%; border-collapse: collapse; min-width: 560px">
+<thead>
+<tr style="color: #5E5B54; font-size: 13px; text-align: left">
+<th style="padding: 8px 8px 8px 0; font-weight: 500">达人</th>
+<th style="padding: 8px; font-weight: 500">合作</th>
+<th style="padding: 8px; font-weight: 500">阶段</th>
+<th style="padding: 8px; font-weight: 500">应跟进</th>
+<th style="padding: 8px; font-weight: 500">下一步</th>
+<th style="padding: 8px 0 8px 8px"></th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-top: 1px solid #EEECE6">
+<td style="padding: 10px 8px 10px 0; font-weight: 500">达人 A</td>
+<td style="padding: 10px 8px">秋冬新款 · 小红书</td>
+<td style="padding: 10px 8px">洽谈中</td>
+<td style="padding: 10px 8px; color: #B4410F">逾期 2 天</td>
+<td style="padding: 10px 8px">确认档期与佣金</td>
+<td style="padding: 10px 0 10px 8px; text-align: right"><button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">记一笔</button></td>
+</tr>
+<tr style="border-top: 1px solid #EEECE6">
+<td style="padding: 10px 8px 10px 0; font-weight: 500">达人 D</td>
+<td style="padding: 10px 8px">针织专场 · 抖音</td>
+<td style="padding: 10px 8px">已确认</td>
+<td style="padding: 10px 8px; color: #B4410F">逾期 2 天</td>
+<td style="padding: 10px 8px">发送样衣清单</td>
+<td style="padding: 10px 0 10px 8px; text-align: right"><button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">记一笔</button></td>
+</tr>
+<tr style="border-top: 1px solid #EEECE6">
+<td style="padding: 10px 8px 10px 0; font-weight: 500">达人 B</td>
+<td style="padding: 10px 8px">秋冬新款 · 小红书</td>
+<td style="padding: 10px 8px">已排期</td>
+<td style="padding: 10px 8px">今天</td>
+<td style="padding: 10px 8px">确认 A003 佣金和挂链</td>
+<td style="padding: 10px 0 10px 8px; text-align: right"><button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">记一笔</button></td>
+</tr>
+<tr style="border-top: 1px solid #EEECE6">
+<td style="padding: 10px 8px 10px 0; font-weight: 500">达人 E</td>
+<td style="padding: 10px 8px">基础款 · 视频号</td>
+<td style="padding: 10px 8px">已排期 · 档期待定</td>
+<td style="padding: 10px 8px">今天</td>
+<td style="padding: 10px 8px">询问试穿反馈</td>
+<td style="padding: 10px 0 10px 8px; text-align: right"><button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">记一笔</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section aria-label="寄样预警" style="flex: 2 1 340px; min-width: 0; background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 18px 20px">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<h2 style="margin: 0 0 12px; font-size: 16px">寄样预警</h2>
+<a href="04-samples-return.html" style="font-size: 13px">全部在外样品</a>
+</div>
+<div style="display: flex; flex-direction: column">
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid #EEECE6">
+<div><div style="font-weight: 500">达人 C</div><div style="color: #5E5B54; font-size: 13px">在外 5 件 · 最早应寄回 10月13日</div></div>
+<span style="align-self: center; padding: 2px 10px; border-radius: 12px; background: #FBEBE2; color: #B4410F; font-size: 13px; white-space: nowrap">逾期 3 件</span>
+</div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid #EEECE6">
+<div><div style="font-weight: 500">达人 A</div><div style="color: #5E5B54; font-size: 13px">在外 4 件 · 最早应寄回 10月16日</div></div>
+<span style="align-self: center; padding: 2px 10px; border-radius: 12px; background: #FBEBE2; color: #B4410F; font-size: 13px; white-space: nowrap">逾期 1 件</span>
+</div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid #EEECE6">
+<div><div style="font-weight: 500">达人 F</div><div style="color: #5E5B54; font-size: 13px">10月15日退回 · 1 件破损待处理</div></div>
+<span style="align-self: center; padding: 2px 10px; border-radius: 12px; background: #F1EFE9; color: #3F3D38; font-size: 13px; white-space: nowrap">质检问题</span>
+</div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid #EEECE6">
+<div><div style="font-weight: 500">达人 E</div><div style="color: #5E5B54; font-size: 13px">签收 16 天，尚未排期</div></div>
+<span style="align-self: center; padding: 2px 10px; border-radius: 12px; background: #F1EFE9; color: #3F3D38; font-size: 13px; white-space: nowrap">未开播</span>
+</div>
+</div>
+</section>
+</div>
+</main>
+<aside aria-label="AI 助手" style="flex: 1 1 340px; box-sizing: border-box; padding: 24px 20px; background: #FFFFFF; border-left: 1px solid #E3E1DA; display: flex; flex-direction: column; gap: 16px">
+<h2 style="margin: 0; font-size: 16px">AI 助手</h2>
+<label style="display: flex; flex-direction: column; gap: 6px; color: #5E5B54; font-size: 13px">粘贴聊天文字或截图
+<textarea rows="4" style="box-sizing: border-box; padding: 10px 12px; border: 1px solid #D6D3CB; border-radius: 8px; font: inherit; color: #1C1B19; resize: vertical">经纪人：A001 可以 25 个点，下周三晚上播，样衣明天寄 S、M 各一件</textarea>
+</label>
+<div style="border: 1px solid #CFE3DE; border-radius: 12px; overflow: hidden">
+<div style="padding: 12px 14px; background: #E3F0ED">
+<div style="font-weight: 500; color: #0E6B5E">识别到 5 项改动 · 待确认</div>
+<div style="font-size: 13px; color: #3F3D38">达人 A · 小红书 · 秋冬新款合作</div>
+</div>
+<div style="padding: 4px 14px">
+<div style="display: grid; grid-template-columns: 76px 1fr; gap: 8px; padding: 8px 0; border-bottom: 1px solid #EEECE6"><span style="color: #5E5B54">阶段</span><span>洽谈中 → <b>已确认</b></span></div>
+<div style="display: grid; grid-template-columns: 76px 1fr; gap: 8px; padding: 8px 0; border-bottom: 1px solid #EEECE6"><span style="color: #5E5B54">A001 佣金</span><span>20% → <b>25%</b></span></div>
+<div style="display: grid; grid-template-columns: 76px 1fr; gap: 8px; padding: 8px 0; border-bottom: 1px solid #EEECE6"><span style="color: #5E5B54">开播日期</span><span>未定 → <b>10月28日 周三 晚</b></span></div>
+<div style="display: grid; grid-template-columns: 76px 1fr; gap: 8px; padding: 8px 0; border-bottom: 1px solid #EEECE6"><span style="color: #5E5B54">寄样草稿</span><span>待寄样：A001 羊毛大衣 黑色 S ×1、M ×1</span></div>
+<div style="display: grid; grid-template-columns: 76px 1fr; gap: 8px; padding: 8px 0"><span style="color: #5E5B54">跟进记录</span><span>经纪人确认佣金与开播时间；下次跟进 10月20日</span></div>
+</div>
+<div style="padding: 10px 14px; background: #F6F5F1; font-size: 13px; color: #5E5B54">出处："……A001 可以 25 个点……"</div>
+<div style="display: flex; gap: 8px; padding: 12px 14px">
+<button type="button" style="flex: 1; min-height: 44px; border: 0; border-radius: 8px; background: #0E6B5E; color: #FFFFFF; font: inherit; font-weight: 500">确认写入</button>
+<button type="button" style="min-height: 44px; padding: 0 14px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">修改</button>
+<button type="button" style="min-height: 44px; padding: 0 14px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">忽略</button>
+</div>
+</div>
+<p style="margin: 0; color: #5E5B54; font-size: 13px">也可以直接提问，比如"签收两周还没开播的有哪些"。</p>
+</aside>
+</div>
+</body>
+</html>

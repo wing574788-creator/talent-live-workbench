@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1792321214124,
+      "tag": "0000_concerned_frightful_four",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792321560619,
+      "tag": "0001_sloppy_lady_ursula",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792322310855,
+      "tag": "0002_short_gargoyle",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1792328996046,
+      "tag": "0003_windy_mimic",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792332520111,
+      "tag": "0004_abandoned_blink",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1792333305251,
+      "tag": "0005_rich_spencer_smythe",
+      "breakpoints": true
+    }
+  ]
+}

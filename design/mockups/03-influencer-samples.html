@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>达人详情 · 样品台账 · 页面布局原型</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0E6B5E}a:hover{color:#0A4F45}
+</style>
+</head>
+<body>
+<!-- 静态布局原型：数据均为示例，仅用于说明布局与信息层级。 -->
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; background: #F6F5F1; color: #1C1B19; font-family: 'Noto Sans SC', sans-serif; font-size: 14px; line-height: 1.55">
+<nav aria-label="主导航" style="flex: 1 1 216px; box-sizing: border-box; padding: 24px 16px; background: #FFFFFF; border-right: 1px solid #E3E1DA; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 16px; font-weight: 700; padding: 4px 12px 20px">达人直播工作台</div>
+<a href="01-home.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">首页</a>
+<a href="02-cooperations.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">合作</a>
+<a href="03-influencer-samples.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #0E6B5E; background: #E3F0ED; font-weight: 500">达人</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">联系人</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">商品</a>
+<a href="04-samples-return.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">寄样</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">审核<span style="min-width: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 11px; background: #B4410F; color: #FFFFFF; font-size: 12px; text-align: center">2</span></a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">导入</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">设置</a>
+</nav>
+<main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px">
+<a href="#" style="font-size: 13px; text-decoration: none">← 达人列表</a>
+<section aria-label="达人信息" style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 20px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: baseline; gap: 12px">
+<h1 style="margin: 0; font-size: 24px; font-weight: 700">达人 A</h1>
+<span style="padding: 1px 10px; border-radius: 10px; background: #F1EFE9; color: #3F3D38; font-size: 13px">评级 B</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px">
+<span style="padding: 2px 10px; border: 1px solid #D6D3CB; border-radius: 12px">小红书 · 博主+买手 · [账号 ID]</span>
+<span style="padding: 2px 10px; border: 1px solid #D6D3CB; border-radius: 12px">抖音 · [账号 ID]</span>
+</div>
+<div style="color: #5E5B54; font-size: 13px">主要对接：联系人 1（经纪人 · [MCN 名称]） · 类目：女装 / 通勤</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start">
+<button type="button" style="min-height: 44px; padding: 0 16px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">登记寄出</button>
+<a href="04-samples-return.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-radius: 8px; background: #0E6B5E; color: #FFFFFF; text-decoration: none; font-weight: 500">登记退回</a>
+</div>
+</section>
+<div role="tablist" aria-label="达人详情" style="display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid #E3E1DA">
+<button type="button" role="tab" aria-selected="false" style="min-height: 44px; padding: 0 16px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #5E5B54; font: inherit">概览</button>
+<button type="button" role="tab" aria-selected="false" style="min-height: 44px; padding: 0 16px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #5E5B54; font: inherit">合作（3）</button>
+<button type="button" role="tab" aria-selected="false" style="min-height: 44px; padding: 0 16px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #5E5B54; font: inherit">跟进</button>
+<button type="button" role="tab" aria-selected="true" style="min-height: 44px; padding: 0 16px; border: 0; border-bottom: 2px solid #0E6B5E; background: transparent; color: #1C1B19; font: inherit; font-weight: 500">样品台账</button>
+<button type="button" role="tab" aria-selected="false" style="min-height: 44px; padding: 0 16px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #5E5B54; font: inherit">变更历史</button>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px">
+<div style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 14px 18px"><div style="color: #5E5B54; font-size: 13px">累计寄出</div><div style="font-size: 26px; font-weight: 700">7 件</div></div>
+<div style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 14px 18px"><div style="color: #5E5B54; font-size: 13px">累计退回</div><div style="font-size: 26px; font-weight: 700">3 件</div></div>
+<div style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 14px 18px"><div style="color: #5E5B54; font-size: 13px">在外</div><div style="font-size: 26px; font-weight: 700">4 件</div></div>
+<div style="background: #FBEBE2; border: 1px solid #F2D3C2; border-radius: 12px; padding: 14px 18px"><div style="color: #8F340C; font-size: 13px">逾期未寄回</div><div style="font-size: 26px; font-weight: 700; color: #8F340C">1 件</div></div>
+<div style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 14px 18px"><div style="color: #5E5B54; font-size: 13px">质检问题</div><div style="font-size: 26px; font-weight: 700">1 次</div></div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+<section aria-label="在外结余" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 18px 20px">
+<h2 style="margin: 0 0 4px; font-size: 16px">还有哪些未寄回</h2>
+<p style="margin: 0 0 12px; color: #5E5B54; font-size: 13px">按款、色、码汇总，跨所有合作</p>
+<div style="overflow-x: auto">
+<table style="width: 100%; border-collapse: collapse; min-width: 420px">
+<thead>
+<tr style="color: #5E5B54; font-size: 13px; text-align: left">
+<th style="padding: 8px 8px 8px 0; font-weight: 500">款号 / 款名</th>
+<th style="padding: 8px; font-weight: 500">颜色 / 尺码</th>
+<th style="padding: 8px; font-weight: 500">在外</th>
+<th style="padding: 8px; font-weight: 500">寄出日期</th>
+<th style="padding: 8px 0 8px 8px; font-weight: 500">应寄回</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-top: 1px solid #EEECE6; background: #FDF5F0">
+<td style="padding: 10px 8px 10px 0; font-weight: 500">A001 羊毛大衣</td>
+<td style="padding: 10px 8px">黑色 / M</td>
+<td style="padding: 10px 8px">1</td>
+<td style="padding: 10px 8px">10月6日</td>
+<td style="padding: 10px 0 10px 8px; color: #B4410F; font-weight: 500">10月16日 · 逾期 2 天</td>
+</tr>
+<tr style="border-top: 1px solid #EEECE6">
+<td style="padding: 10px 8px 10px 0; font-weight: 500">A001 羊毛大衣</td>
+<td style="padding: 10px 8px">黑色 / S</td>
+<td style="padding: 10px 8px">1</td>
+<td style="padding: 10px 8px">10月12日</td>
+<td style="padding: 10px 0 10px 8px">10月26日</td>
+</tr>
+<tr style="border-top: 1px solid #EEECE6">
+<td style="padding: 10px 8px 10px 0; font-weight: 500">A004 廓形风衣</td>
+<td style="padding: 10px 8px">驼色 / M</td>
+<td style="padding: 10px 8px">1</td>
+<td style="padding: 10px 8px">10月12日</td>
+<td style="padding: 10px 0 10px 8px">10月26日</td>
+</tr>
+<tr style="border-top: 1px solid #EEECE6">
+<td style="padding: 10px 8px 10px 0; font-weight: 500">A004 廓形风衣</td>
+<td style="padding: 10px 8px">驼色 / L</td>
+<td style="padding: 10px 8px">1</td>
+<td style="padding: 10px 8px">10月12日</td>
+<td style="padding: 10px 0 10px 8px">10月26日</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section aria-label="样品流水" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 18px 20px">
+<h2 style="margin: 0 0 4px; font-size: 16px">寄出与退回流水</h2>
+<p style="margin: 0 0 12px; color: #5E5B54; font-size: 13px">按日期倒序</p>
+<ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+<li style="display: grid; grid-template-columns: 76px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid #EEECE6">
+<div><div style="font-weight: 500">10月15日</div><span style="display: inline-block; margin-top: 4px; padding: 0 8px; border-radius: 10px; background: #E3F0ED; color: #0E6B5E; font-size: 12px">退回</span></div>
+<div style="display: flex; flex-direction: column; gap: 2px"><div>A003 针织半裙 灰色 M ×1 · 完好</div><div style="color: #5E5B54; font-size: 13px">顺丰 [单号] · 冲抵 10月6日 寄出</div></div>
+</li>
+<li style="display: grid; grid-template-columns: 76px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid #EEECE6">
+<div><div style="font-weight: 500">10月12日</div><span style="display: inline-block; margin-top: 4px; padding: 0 8px; border-radius: 10px; background: #F1EFE9; color: #3F3D38; font-size: 12px">寄出</span></div>
+<div style="display: flex; flex-direction: column; gap: 2px"><div>A001 羊毛大衣 黑色 S ×1；A004 廓形风衣 驼色 M ×1、L ×1</div><div style="color: #5E5B54; font-size: 13px">合作：秋冬新款 第 2 场 · 应寄回 10月26日</div></div>
+</li>
+<li style="display: grid; grid-template-columns: 76px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid #EEECE6">
+<div><div style="font-weight: 500">10月6日</div><span style="display: inline-block; margin-top: 4px; padding: 0 8px; border-radius: 10px; background: #F1EFE9; color: #3F3D38; font-size: 12px">寄出</span></div>
+<div style="display: flex; flex-direction: column; gap: 2px"><div>A001 羊毛大衣 黑色 M ×1；A003 针织半裙 灰色 M ×1</div><div style="color: #5E5B54; font-size: 13px">合作：秋冬新款 第 1 场 · 应寄回 10月16日</div></div>
+</li>
+<li style="display: grid; grid-template-columns: 76px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid #EEECE6">
+<div><div style="font-weight: 500">10月5日</div><span style="display: inline-block; margin-top: 4px; padding: 0 8px; border-radius: 10px; background: #E3F0ED; color: #0E6B5E; font-size: 12px">退回</span></div>
+<div style="display: flex; flex-direction: column; gap: 2px"><div>A002 羊毛开衫 白色 S ×1 · 完好；M ×1 · <span style="color: #B4410F">污渍，待沟通</span></div><div style="color: #5E5B54; font-size: 13px">顺丰 [单号] · 冲抵 9月20日 寄出</div></div>
+</li>
+<li style="display: grid; grid-template-columns: 76px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid #EEECE6">
+<div><div style="font-weight: 500">9月20日</div><span style="display: inline-block; margin-top: 4px; padding: 0 8px; border-radius: 10px; background: #F1EFE9; color: #3F3D38; font-size: 12px">寄出</span></div>
+<div style="display: flex; flex-direction: column; gap: 2px"><div>A002 羊毛开衫 白色 S ×1、M ×1</div><div style="color: #5E5B54; font-size: 13px">合作：秋季基础款 · 已结清</div></div>
+</li>
+</ol>
+</section>
+</div>
+</main>
+</div>
+</body>
+</html>

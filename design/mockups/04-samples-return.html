@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>寄样 · 登记退回 · 页面布局原型</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0E6B5E}a:hover{color:#0A4F45}
+</style>
+</head>
+<body>
+<!-- 静态布局原型：数据均为示例，仅用于说明布局与信息层级。 -->
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; background: #F6F5F1; color: #1C1B19; font-family: 'Noto Sans SC', sans-serif; font-size: 14px; line-height: 1.55">
+<nav aria-label="主导航" style="flex: 1 1 216px; box-sizing: border-box; padding: 24px 16px; background: #FFFFFF; border-right: 1px solid #E3E1DA; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 16px; font-weight: 700; padding: 4px 12px 20px">达人直播工作台</div>
+<a href="01-home.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">首页</a>
+<a href="02-cooperations.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">合作</a>
+<a href="03-influencer-samples.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">达人</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">联系人</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">商品</a>
+<a href="04-samples-return.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #0E6B5E; background: #E3F0ED; font-weight: 500">寄样</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">审核<span style="min-width: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 11px; background: #B4410F; color: #FFFFFF; font-size: 12px; text-align: center">2</span></a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">导入</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">设置</a>
+</nav>
+<main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px">
+<div>
+<h1 style="margin: 0; font-size: 24px; font-weight: 700">寄样</h1>
+<p style="margin: 4px 0 0; color: #5E5B54">在外 23 件，分布在 6 位达人手上，其中 4 件逾期；1 位达人待寄样</p>
+</div>
+<button type="button" style="min-height: 44px; padding: 0 16px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">登记寄出</button>
+</div>
+<div role="tablist" aria-label="筛选" style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" role="tab" aria-selected="false" style="min-height: 36px; padding: 0 14px; border: 1px solid #D6D3CB; border-radius: 18px; background: #FFFFFF; font: inherit">待寄样（1）</button>
+<button type="button" role="tab" aria-selected="true" style="min-height: 36px; padding: 0 14px; border: 0; border-radius: 18px; background: #1C1B19; color: #FFFFFF; font: inherit">全部在外</button>
+<button type="button" role="tab" aria-selected="false" style="min-height: 36px; padding: 0 14px; border: 1px solid #D6D3CB; border-radius: 18px; background: #FFFFFF; font: inherit">有逾期（2）</button>
+<button type="button" role="tab" aria-selected="false" style="min-height: 36px; padding: 0 14px; border: 1px solid #D6D3CB; border-radius: 18px; background: #FFFFFF; font: inherit">质检待处理（1）</button>
+<button type="button" role="tab" aria-selected="false" style="min-height: 36px; padding: 0 14px; border: 1px solid #D6D3CB; border-radius: 18px; background: #FFFFFF; font: inherit">已结清</button>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+<section aria-label="按达人汇总" style="flex: 3 1 520px; min-width: 0; background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 12px; padding: 18px 20px">
+<div style="overflow-x: auto">
+<table style="width: 100%; border-collapse: collapse; min-width: 600px">
+<thead>
+<tr style="color: #5E5B54; font-size: 13px; text-align: left">
+<th style="padding: 8px 8px 8px 0; font-weight: 500">达人</th>
+<th style="padding: 8px; font-weight: 500">在外</th>
+<th style="padding: 8px; font-weight: 500">逾期</th>
+<th style="padding: 8px; font-weight: 500">最早应寄回</th>
+<th style="padding: 8px; font-weight: 500">最近寄出</th>
+<th style="padding: 8px; font-weight: 500">最近退回</th>
+<th style="padding: 8px 0 8px 8px"></th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-top: 1px solid #EEECE6">
+<td style="padding: 10px 8px 10px 0; font-weight: 500"><a href="#">达人 C</a></td>
+<td style="padding: 10px 8px">5 件</td>
+<td style="padding: 10px 8px; color: #B4410F; font-weight: 500">3 件</td>
+<td style="padding: 10px 8px; color: #B4410F">10月13日</td>
+<td style="padding: 10px 8px">10月3日</td>
+<td style="padding: 10px 8px">—</td>
+<td style="padding: 10px 0 10px 8px; text-align: right"><button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">登记退回</button></td>
+</tr>
+<tr style="border-top: 1px solid #EEECE6; background: #EEF6F4">
+<td style="padding: 10px 8px 10px 0; font-weight: 500"><a href="03-influencer-samples.html">达人 A</a></td>
+<td style="padding: 10px 8px">4 件</td>
+<td style="padding: 10px 8px; color: #B4410F; font-weight: 500">1 件</td>
+<td style="padding: 10px 8px; color: #B4410F">10月16日</td>
+<td style="padding: 10px 8px">10月12日</td>
+<td style="padding: 10px 8px">10月15日</td>
+<td style="padding: 10px 0 10px 8px; text-align: right"><button type="button" aria-pressed="true" style="min-height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: #0E6B5E; color: #FFFFFF; font: inherit">登记退回</button></td>
+</tr>
+<tr style="border-top: 1px solid #EEECE6">
+<td style="padding: 10px 8px 10px 0; font-weight: 500"><a href="#">达人 D</a></td>
+<td style="padding: 10px 8px">5 件</td>
+<td style="padding: 10px 8px">—</td>
+<td style="padding: 10px 8px">11月2日</td>
+<td style="padding: 10px 8px">10月17日</td>
+<td style="padding: 10px 8px">—</td>
+<td style="padding: 10px 0 10px 8px; text-align: right"><button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">登记退回</button></td>
+</tr>
+<tr style="border-top: 1px solid #EEECE6">
+<td style="padding: 10px 8px 10px 0; font-weight: 500"><a href="#">达人 B</a></td>
+<td style="padding: 10px 8px">4 件</td>
+<td style="padding: 10px 8px">—</td>
+<td style="padding: 10px 8px">10月28日</td>
+<td style="padding: 10px 8px">10月14日</td>
+<td style="padding: 10px 8px">9月30日</td>
+<td style="padding: 10px 0 10px 8px; text-align: right"><button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">登记退回</button></td>
+</tr>
+<tr style="border-top: 1px solid #EEECE6">
+<td style="padding: 10px 8px 10px 0; font-weight: 500"><a href="#">达人 E</a></td>
+<td style="padding: 10px 8px">3 件</td>
+<td style="padding: 10px 8px">—</td>
+<td style="padding: 10px 8px">10月30日</td>
+<td style="padding: 10px 8px">9月29日</td>
+<td style="padding: 10px 8px">—</td>
+<td style="padding: 10px 0 10px 8px; text-align: right"><button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">登记退回</button></td>
+</tr>
+<tr style="border-top: 1px solid #EEECE6">
+<td style="padding: 10px 8px 10px 0; font-weight: 500"><a href="#">达人 I</a></td>
+<td style="padding: 10px 8px">2 件</td>
+<td style="padding: 10px 8px">—</td>
+<td style="padding: 10px 8px">待排期</td>
+<td style="padding: 10px 8px">10月17日</td>
+<td style="padding: 10px 8px">—</td>
+<td style="padding: 10px 0 10px 8px; text-align: right"><button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">登记退回</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section aria-label="登记退回" style="flex: 2 1 380px; min-width: 0; background: #FFFFFF; border: 1px solid #CFE3DE; border-radius: 12px; overflow: hidden">
+<div style="padding: 16px 20px; background: #E3F0ED">
+<h2 style="margin: 0; font-size: 16px">登记退回 · 达人 A</h2>
+<p style="margin: 2px 0 0; color: #3F3D38; font-size: 13px">列出他所有在外样品，不分合作；勾选这个包裹里收到的</p>
+</div>
+<div style="padding: 16px 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<label style="flex: 1 1 140px; display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5E5B54">退回日期<input type="text" value="10月18日" style="min-height: 40px; box-sizing: border-box; padding: 0 10px; border: 1px solid #D6D3CB; border-radius: 8px; font: inherit; color: #1C1B19"></label>
+<label style="flex: 2 1 180px; display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #5E5B54">快递单号<input type="text" placeholder="粘贴或扫码" style="min-height: 40px; box-sizing: border-box; padding: 0 10px; border: 1px solid #D6D3CB; border-radius: 8px; font: inherit; color: #1C1B19"></label>
+</div>
+<div style="display: flex; flex-direction: column; border-top: 1px solid #EEECE6">
+<div style="display: grid; grid-template-columns: 1fr 72px 112px; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #EEECE6">
+<label style="display: flex; gap: 8px; align-items: center"><input type="checkbox" checked style="width: 18px; height: 18px"><span>A001 羊毛大衣 黑色 M<span style="display: block; font-size: 12px; color: #B4410F">在外 1 · 逾期 2 天</span></span></label>
+<label style="font-size: 12px; color: #5E5B54">数量<input type="number" value="1" min="0" max="1" style="width: 100%; min-height: 36px; box-sizing: border-box; padding: 0 8px; border: 1px solid #D6D3CB; border-radius: 6px; font: inherit; color: #1C1B19"></label>
+<label style="font-size: 12px; color: #5E5B54">质检<select style="width: 100%; min-height: 36px; border: 1px solid #D6D3CB; border-radius: 6px; font: inherit; color: #1C1B19; background: #FFFFFF"><option>完好</option><option>污渍</option><option>破损</option><option>缺配件</option><option>吊牌缺失</option></select></label>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 72px 112px; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #EEECE6">
+<label style="display: flex; gap: 8px; align-items: center"><input type="checkbox" checked style="width: 18px; height: 18px"><span>A001 羊毛大衣 黑色 S<span style="display: block; font-size: 12px; color: #5E5B54">在外 1 · 应寄回 10月26日</span></span></label>
+<label style="font-size: 12px; color: #5E5B54">数量<input type="number" value="1" min="0" max="1" style="width: 100%; min-height: 36px; box-sizing: border-box; padding: 0 8px; border: 1px solid #D6D3CB; border-radius: 6px; font: inherit; color: #1C1B19"></label>
+<label style="font-size: 12px; color: #5E5B54">质检<select style="width: 100%; min-height: 36px; border: 1px solid #D6D3CB; border-radius: 6px; font: inherit; color: #1C1B19; background: #FFFFFF"><option>污渍</option><option>完好</option><option>破损</option><option>缺配件</option><option>吊牌缺失</option></select></label>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 72px 112px; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #EEECE6">
+<label style="display: flex; gap: 8px; align-items: center"><input type="checkbox" style="width: 18px; height: 18px"><span>A004 廓形风衣 驼色 M<span style="display: block; font-size: 12px; color: #5E5B54">在外 1 · 应寄回 10月26日</span></span></label>
+<label style="font-size: 12px; color: #5E5B54">数量<input type="number" value="0" min="0" max="1" style="width: 100%; min-height: 36px; box-sizing: border-box; padding: 0 8px; border: 1px solid #D6D3CB; border-radius: 6px; font: inherit; color: #1C1B19"></label>
+<span style="font-size: 12px; color: #5E5B54">未收到</span>
+</div>
+<div style="display: grid; grid-template-columns: 1fr 72px 112px; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #EEECE6">
+<label style="display: flex; gap: 8px; align-items: center"><input type="checkbox" style="width: 18px; height: 18px"><span>A004 廓形风衣 驼色 L<span style="display: block; font-size: 12px; color: #5E5B54">在外 1 · 应寄回 10月26日</span></span></label>
+<label style="font-size: 12px; color: #5E5B54">数量<input type="number" value="0" min="0" max="1" style="width: 100%; min-height: 36px; box-sizing: border-box; padding: 0 8px; border: 1px solid #D6D3CB; border-radius: 6px; font: inherit; color: #1C1B19"></label>
+<span style="font-size: 12px; color: #5E5B54">未收到</span>
+</div>
+</div>
+<div style="padding: 10px 12px; border-radius: 8px; background: #FBEBE2; color: #8F340C; font-size: 13px">A001 羊毛大衣 黑色 S 质检为"污渍"：请上传照片并选择处理结果（重新入库 / 报损 / 待沟通 / 索赔）。</div>
+<button type="button" style="min-height: 44px; border: 1px dashed #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit; color: #3F3D38">上传质检照片</button>
+<div style="color: #5E5B54; font-size: 13px">本次退回 2 件，覆盖 2 场合作；登记后达人 A 在外剩 2 件。</div>
+<div style="display: flex; gap: 10px">
+<button type="button" style="flex: 1; min-height: 44px; border: 0; border-radius: 8px; background: #0E6B5E; color: #FFFFFF; font: inherit; font-weight: 500">确认登记</button>
+<button type="button" style="min-height: 44px; padding: 0 16px; border: 1px solid #D6D3CB; border-radius: 8px; background: #FFFFFF; font: inherit">取消</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+</body>
+</html>

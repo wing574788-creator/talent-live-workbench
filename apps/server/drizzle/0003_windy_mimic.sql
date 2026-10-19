@@ -1,0 +1,1 @@
+ALTER TABLE `contacts` ADD `next_follow_date` text;

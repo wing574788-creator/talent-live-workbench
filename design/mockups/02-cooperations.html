@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>合作看板 · 页面布局原型</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0E6B5E}a:hover{color:#0A4F45}
+</style>
+</head>
+<body>
+<!-- 静态布局原型：数据均为示例，仅用于说明布局与信息层级。 -->
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; background: #F6F5F1; color: #1C1B19; font-family: 'Noto Sans SC', sans-serif; font-size: 14px; line-height: 1.55">
+<nav aria-label="主导航" style="flex: 1 1 216px; box-sizing: border-box; padding: 24px 16px; background: #FFFFFF; border-right: 1px solid #E3E1DA; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 16px; font-weight: 700; padding: 4px 12px 20px">达人直播工作台</div>
+<a href="01-home.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">首页</a>
+<a href="02-cooperations.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #0E6B5E; background: #E3F0ED; font-weight: 500">合作</a>
+<a href="03-influencer-samples.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">达人</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">联系人</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">商品</a>
+<a href="04-samples-return.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">寄样</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">审核<span style="min-width: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 11px; background: #B4410F; color: #FFFFFF; font-size: 12px; text-align: center">2</span></a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">导入</a>
+<a href="#" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; text-decoration: none; color: #3F3D38">设置</a>
+</nav>
+<main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px">
+<h1 style="margin: 0; font-size: 24px; font-weight: 700">合作</h1>
+<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
+<div role="group" aria-label="视图" style="display: flex; border: 1px solid #D6D3CB; border-radius: 8px; overflow: hidden">
+<button type="button" aria-pressed="true" style="min-height: 40px; padding: 0 16px; border: 0; background: #1C1B19; color: #FFFFFF; font: inherit">看板</button>
+<button type="button" aria-pressed="false" style="min-height: 40px; padding: 0 16px; border: 0; background: #FFFFFF; color: #1C1B19; font: inherit">列表</button>
+</div>
+<button type="button" style="min-height: 40px; padding: 0 16px; border: 0; border-radius: 8px; background: #0E6B5E; color: #FFFFFF; font: inherit; font-weight: 500">新建合作</button>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #D6D3CB; border-radius: 18px; background: #FFFFFF; font: inherit">平台：全部</button>
+<button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #D6D3CB; border-radius: 18px; background: #FFFFFF; font: inherit">合作模式：全部</button>
+<button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #D6D3CB; border-radius: 18px; background: #FFFFFF; font: inherit">商品：全部</button>
+<button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #D6D3CB; border-radius: 18px; background: #FFFFFF; font: inherit">跟进状态：全部</button>
+<button type="button" style="min-height: 36px; padding: 0 12px; border: 1px solid #0E6B5E; border-radius: 18px; background: #E3F0ED; color: #0E6B5E; font: inherit">只看需跟进</button>
+</div>
+<div style="overflow-x: auto; padding-bottom: 8px">
+<div style="display: flex; gap: 14px; align-items: flex-start; min-width: 1960px">
+<section aria-label="待建联" style="flex: 0 0 200px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; color: #5E5B54; font-weight: 500"><span>待建联</span><span>2</span></div>
+<article style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-weight: 500">达人 G</div>
+<div style="font-size: 13px; color: #5E5B54">小红书 · 买手</div>
+<div style="font-size: 13px">A002 羊毛开衫 · A005 基础 T 恤</div>
+</article>
+<article style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-weight: 500">达人 H</div>
+<div style="font-size: 13px; color: #5E5B54">视频号</div>
+<div style="font-size: 13px">A001 羊毛大衣</div>
+</article>
+</section>
+<section aria-label="洽谈中" style="flex: 0 0 220px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; color: #5E5B54; font-weight: 500"><span>洽谈中</span><span>2</span></div>
+<article style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-weight: 500">达人 A</div>
+<div style="font-size: 13px; color: #5E5B54">小红书 · 经纪人对接</div>
+<div style="font-size: 13px">A001 羊毛大衣 · 佣金 20%</div>
+<div style="display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 6px; background: #F6F5F1; font-size: 13px"><span style="font-weight: 500">等档期</span><span style="color: #5E5B54">· 第 3 次跟进 · 5 天前</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="padding: 1px 8px; border-radius: 10px; background: #FBEBE2; color: #B4410F; font-size: 12px">跟进逾期 2 天</span>
+<span style="padding: 1px 8px; border-radius: 10px; background: #F1EFE9; color: #3F3D38; font-size: 12px">在外 4 件</span>
+</div>
+</article>
+<article style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-weight: 500">达人 J</div>
+<div style="font-size: 13px; color: #5E5B54">小红书 · 本人对接</div>
+<div style="font-size: 13px">A005 基础 T 恤</div>
+<div style="display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 6px; background: #F6F5F1; font-size: 13px"><span style="font-weight: 500">已发邀约</span><span style="color: #5E5B54">· 第 1 次跟进 · 2 天前</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="padding: 1px 8px; border-radius: 10px; background: #F1EFE9; color: #3F3D38; font-size: 12px">10月20日 再跟进</span>
+</div>
+</article>
+</section>
+<section aria-label="已确认" style="flex: 0 0 200px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; color: #5E5B54; font-weight: 500"><span>已确认</span><span>1</span></div>
+<article style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-weight: 500">达人 D</div>
+<div style="font-size: 13px; color: #5E5B54">抖音 · 专场</div>
+<div style="font-size: 13px">A001 羊毛大衣 · A003 针织半裙 · A004 廓形风衣</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="padding: 1px 8px; border-radius: 10px; background: #FBEBE2; color: #B4410F; font-size: 12px">跟进逾期 2 天</span>
+</div>
+</article>
+</section>
+<section aria-label="待寄样" style="flex: 0 0 200px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; color: #5E5B54; font-weight: 500"><span>待寄样</span><span>1</span></div>
+<article style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-weight: 500">达人 K</div>
+<div style="font-size: 13px; color: #5E5B54">小红书</div>
+<div style="font-size: 13px">待寄：A002 羊毛开衫 灰色 M ×1、L ×1</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="padding: 1px 8px; border-radius: 10px; background: #F1EFE9; color: #3F3D38; font-size: 12px">确认 1 天</span>
+</div>
+</article>
+</section>
+<section aria-label="已排期" style="flex: 0 0 200px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; color: #5E5B54; font-weight: 500"><span>已排期</span><span>4</span></div>
+<article style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-weight: 500">达人 B</div>
+<div style="font-size: 13px; color: #5E5B54">小红书 · 10月21日 开播</div>
+<div style="font-size: 13px">A001 25% · A003 佣金未定</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="padding: 1px 8px; border-radius: 10px; background: #E3F0ED; color: #0E6B5E; font-size: 12px">3 天后开播</span>
+</div>
+</article>
+<article style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-weight: 500">达人 C</div>
+<div style="font-size: 13px; color: #5E5B54">小红书 · 10月26日 开播</div>
+<div style="font-size: 13px">A004 廓形风衣 · 第 2 场</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="padding: 1px 8px; border-radius: 10px; background: #FBEBE2; color: #B4410F; font-size: 12px">上一场样品逾期 3 件</span>
+</div>
+</article>
+<article style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-weight: 500">达人 E</div>
+<div style="font-size: 13px; color: #5E5B54">视频号 · 档期待定</div>
+<div style="font-size: 13px">A005 基础 T 恤</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="padding: 1px 8px; border-radius: 10px; background: #F1EFE9; color: #3F3D38; font-size: 12px">今日跟进</span>
+<span style="padding: 1px 8px; border-radius: 10px; background: #F1EFE9; color: #3F3D38; font-size: 12px">在外 3 件</span>
+</div>
+</article>
+<article style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-weight: 500">达人 I</div>
+<div style="font-size: 13px; color: #5E5B54">小红书 · 档期待定</div>
+<div style="font-size: 13px">A002 羊毛开衫</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="padding: 1px 8px; border-radius: 10px; background: #F1EFE9; color: #3F3D38; font-size: 12px">在外 2 件</span>
+</div>
+</article>
+</section>
+<section aria-label="已开播" style="flex: 0 0 200px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; color: #5E5B54; font-weight: 500"><span>已开播</span><span>0</span></div>
+<div style="border: 1px dashed #D6D3CB; border-radius: 10px; padding: 18px 12px; color: #5E5B54; font-size: 13px; text-align: center">开播日过后自动进入</div>
+</section>
+<section aria-label="待退样" style="flex: 0 0 200px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; color: #5E5B54; font-weight: 500"><span>待退样</span><span>1</span></div>
+<article style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-weight: 500">达人 C</div>
+<div style="font-size: 13px; color: #5E5B54">小红书 · 10月8日 已开播</div>
+<div style="font-size: 13px">A001 羊毛大衣 · A002 羊毛开衫 · 第 1 场</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="padding: 1px 8px; border-radius: 10px; background: #FBEBE2; color: #B4410F; font-size: 12px">在外 5 件 · 逾期 3 件</span>
+</div>
+</article>
+</section>
+<section aria-label="待复盘" style="flex: 0 0 200px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; color: #5E5B54; font-weight: 500"><span>待复盘</span><span>0</span></div>
+<div style="border: 1px dashed #D6D3CB; border-radius: 10px; padding: 18px 12px; color: #5E5B54; font-size: 13px; text-align: center">样品结清后自动进入</div>
+</section>
+<section aria-label="完成" style="flex: 0 0 200px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; color: #5E5B54; font-weight: 500"><span>完成</span><span>12</span></div>
+<article style="background: #FFFFFF; border: 1px solid #E3E1DA; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+<div style="font-weight: 500">达人 F</div>
+<div style="font-size: 13px; color: #5E5B54">抖音 · 9月26日 开播</div>
+<div style="font-size: 13px">A003 针织半裙</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="padding: 1px 8px; border-radius: 10px; background: #F1EFE9; color: #3F3D38; font-size: 12px">质检问题 1 件</span>
+</div>
+</article>
+</section>
+</div>
+</div>
+<p style="margin: 0; color: #5E5B54; font-size: 13px">暂缓、流失、放弃的合作不在看板上显示，可在列表视图中查看；洽谈中的卡片显示当前跟进状态和跟进次数，每记一笔跟进都会更新。</p>
+</main>
+</div>
+</body>
+</html>
