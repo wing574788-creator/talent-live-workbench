@@ -7,13 +7,8 @@ import { AiPanelProvider, useAiPanel } from './ai/AiPanel.tsx';
 import { AiSidebar } from './ai/AiSidebar.tsx';
 import { RecordHost } from './ai/RecordHost.tsx';
 
-/** 以阅读和填表为主的页面限宽居中；看板和大表格保持流式铺满（见 DECISIONS） */
-const NARROW_PAGES: Record<string, string> = {
-  '/': 'max-w-[1360px]',
-  '/review': 'max-w-[1200px]',
-  '/import': 'max-w-[1200px]',
-  '/settings': 'max-w-[1200px]',
-};
+/** 整个应用（侧栏 + 内容 + AI 助手）的固定版心宽度；更宽的屏幕两侧留白 */
+const APP_MAX_WIDTH = 1600;
 
 const navBase =
   'flex min-h-11 items-center justify-between rounded-2xl px-3.5 text-sm no-underline transition-colors';
@@ -100,91 +95,95 @@ function Shell() {
   });
   const pendingCount = pending.data?.rows.length ?? 0;
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const widthCls = NARROW_PAGES[pathname] ?? '';
 
   return (
-    <div className="flex min-h-screen">
-      <nav
-        aria-label="主导航"
-        className="sticky top-0 flex h-screen w-58 shrink-0 flex-col gap-1 border-r border-line bg-surface px-4 py-7"
+    <div className="min-h-screen bg-gutter">
+      <div
+        className="mx-auto flex min-h-screen bg-bg shadow-[0_0_60px_rgba(22,21,43,.08)]"
+        style={{ maxWidth: APP_MAX_WIDTH }}
       >
-        <div className="flex items-center gap-2.5 px-2.5 pb-6">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-ink">
-            <svg
-              aria-hidden="true"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#c8f560"
-              strokeWidth="2.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+        <nav
+          aria-label="主导航"
+          className="sticky top-0 flex h-screen w-58 shrink-0 flex-col gap-1 border-r border-line bg-surface px-4 py-7"
+        >
+          <div className="flex items-center gap-2.5 px-2.5 pb-6">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-ink">
+              <svg
+                aria-hidden="true"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#c8f560"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M4 14l5-9 4 6 3-4 4 7z" />
+              </svg>
+            </div>
+            <div className="text-base font-extrabold leading-tight tracking-tight">
+              达人直播
+              <br />
+              <span className="text-xs font-medium text-muted">工作台</span>
+            </div>
+          </div>
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.key}
+              to={item.path}
+              activeOptions={{ exact: item.path === '/' }}
+              className={navBase}
+              activeProps={{
+                className: `${navBase} bg-ink font-bold text-white [&_svg]:text-lime`,
+              }}
+              inactiveProps={{ className: `${navBase} text-ink-2 hover:bg-bg` }}
             >
-              <path d="M4 14l5-9 4 6 3-4 4 7z" />
-            </svg>
-          </div>
-          <div className="text-base font-extrabold leading-tight tracking-tight">
-            达人直播
-            <br />
-            <span className="text-xs font-medium text-muted">工作台</span>
-          </div>
-        </div>
-        {NAV_ITEMS.map((item) => (
-          <Link
-            key={item.key}
-            to={item.path}
-            activeOptions={{ exact: item.path === '/' }}
-            className={navBase}
-            activeProps={{
-              className: `${navBase} bg-ink font-bold text-white [&_svg]:text-lime`,
-            }}
-            inactiveProps={{ className: `${navBase} text-ink-2 hover:bg-bg` }}
-          >
-            <span className="flex items-center gap-3">
-              {ICONS[item.key]}
-              {item.label}
-            </span>
-            {item.key === 'review' && pendingCount > 0 && (
-              <span className="min-w-5.5 rounded-full bg-[#ff6f59] px-1.5 text-center text-xs font-extrabold text-ink">
-                {pendingCount}
+              <span className="flex items-center gap-3">
+                {ICONS[item.key]}
+                {item.label}
               </span>
-            )}
-          </Link>
-        ))}
-        <div className="mt-auto rounded-2xl bg-bg px-3.5 py-3 text-xs leading-relaxed text-ink-2">
-          <b className="text-ink">数据在本机</b>
-          <br />
-          每天自动备份，可在设置里恢复
-        </div>
-      </nav>
+              {item.key === 'review' && pendingCount > 0 && (
+                <span className="min-w-5.5 rounded-full bg-[#ff6f59] px-1.5 text-center text-xs font-extrabold text-ink">
+                  {pendingCount}
+                </span>
+              )}
+            </Link>
+          ))}
+          <div className="mt-auto rounded-2xl bg-bg px-3.5 py-3 text-xs leading-relaxed text-ink-2">
+            <b className="text-ink">数据在本机</b>
+            <br />
+            每天自动备份，可在设置里恢复
+          </div>
+        </nav>
 
-      <main className="min-w-0 flex-1 px-9 pb-12 pt-8">
-        <motion.div
-          key={pathname}
-          className={`${widthCls} ${widthCls ? 'mx-auto' : ''}`}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.22, ease: 'easeOut' }}
-        >
-          <Outlet />
-        </motion.div>
-      </main>
+        <main className="min-w-0 flex-1 px-9 pb-12 pt-8">
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.22, ease: 'easeOut' }}
+          >
+            <Outlet />
+          </motion.div>
+        </main>
 
-      {open ? (
-        <AiSidebar onClose={() => setOpen(false)} />
-      ) : (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 flex min-h-12 cursor-pointer items-center gap-2 rounded-full border-0 bg-ink px-5 font-bold text-white shadow-[0_18px_40px_rgba(22,21,43,.28)] hover:bg-brand-dark"
-        >
-          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="#c8f560">
-            <path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z" />
-          </svg>
-          AI 助手
-        </button>
-      )}
+        {open ? (
+          <AiSidebar onClose={() => setOpen(false)} />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            style={{ right: `max(1.5rem, calc((100vw - ${APP_MAX_WIDTH}px) / 2 + 1.5rem))` }}
+            className="fixed bottom-6 flex min-h-12 cursor-pointer items-center gap-2 rounded-full border-0 bg-ink px-5 font-bold text-white shadow-[0_18px_40px_rgba(22,21,43,.28)] hover:bg-brand-dark"
+          >
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="#c8f560">
+              <path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z" />
+            </svg>
+            AI 助手
+          </button>
+        )}
+      </div>
     </div>
   );
 }
