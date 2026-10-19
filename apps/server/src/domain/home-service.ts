@@ -1,5 +1,5 @@
 import { addDays, keyTotals } from './sample-ledger.ts';
-import { todayShanghai } from './automation.ts';
+import { dateShanghai, todayShanghai } from './automation.ts';
 import type { ServiceRegistry } from './entity-service.ts';
 import type { ReviewService } from './review-service.ts';
 import type { SampleService } from './sample-service.ts';
@@ -7,7 +7,7 @@ import type { SettingsService } from './settings-service.ts';
 import type { Row } from './types.ts';
 
 const dayDiff = (from: string, to: string) =>
-  Math.round((Date.parse(to.slice(0, 10)) - Date.parse(from.slice(0, 10))) / 86400_000);
+  Math.round((Date.parse(dateShanghai(to)) - Date.parse(dateShanghai(from))) / 86400_000);
 
 /** 不再需要跟进的阶段 */
 const CLOSED = new Set(['完成', '流失', '放弃', '暂缓']);
@@ -247,7 +247,7 @@ export class HomeService {
         influencerId: id,
         nickname: s.influencer.nickname as string,
         outstanding: s.outstanding,
-        signedAt: (signed.signedAt as string).slice(0, 10),
+        signedAt: dateShanghai(signed.signedAt as string),
         days,
         scheduled: mine.some((c) => c.liveDate),
       });

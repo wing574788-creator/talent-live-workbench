@@ -2,7 +2,7 @@ import { and, desc, eq } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 import type { Db } from '../db/index.ts';
 import { changeLog } from '../db/schema.ts';
-import { todayShanghai } from './automation.ts';
+import { dateShanghai, todayShanghai } from './automation.ts';
 import { DomainError } from './errors.ts';
 import {
   EntityService,
@@ -38,7 +38,7 @@ export class CooperationService extends EntityService {
     return {
       followCount: list.length,
       lastFollowAt: last ?? null,
-      daysSinceFollow: last ? Math.max(0, dayDiff(last.slice(0, 10), todayShanghai())) : null,
+      daysSinceFollow: last ? Math.max(0, dayDiff(dateShanghai(last), todayShanghai())) : null,
       stalled,
       stallCount: n,
     };

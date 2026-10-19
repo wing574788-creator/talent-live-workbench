@@ -139,3 +139,10 @@
 - 新增 `scripts/scan-secrets.mjs`：`pnpm scan:secrets` 扫整个工作区；`pnpm hooks` 启用 `.githooks/pre-commit`，提交前扫描暂存区；`secret-scan.test.ts` 让测试也扫一遍。
 - `.gitignore` 补充 `secrets.json`、`ai-config.json`、`backup-config.json`、`*.before-restore`、`auth.json`、`*.pem`、`*.key`、`.env.*`。
 - 已知局限：真实姓名只有在库里已有或带"收件人："等标签时才会被外发脱敏，自由文本里孤立出现的人名无法识别。
+
+## 2026-10-20 页面宽度分档与动效
+
+- **页面宽度分两档**：看板、达人、联系人、商品、寄样这类宽表格页保持流式铺满（列多，限宽会逼出横向滚动）；首页（1360px）、审核、导入、设置（1200px）限宽居中，避免在 2K 以上屏幕上文字和输入框被拉得过长。配置在 `AppShell.tsx` 的 `NARROW_PAGES`，新增页面默认流式。
+- **引入 `motion`（原 Framer Motion）做适度动效**，只用在四处：切换页面时淡入上移；抽屉和对话框进出（先播完退出动画再真正卸载，调用方代码不用改）；提示条进出；首页四张数字卡片依次出现、数字滚动到目标值、悬停轻微上浮。其余仍用 CSS 过渡。看板卡片拖拽不加动画，避免和 dnd-kit 抢 transform。
+- **遵循系统"减少动效"设置**（`MotionConfig reducedMotion="user"`，数字滚动也会跳过）。
+- 没有引入 shadcn/ui 或其他组件库：组件是自己写的，样式已统一，换库成本大于收益。

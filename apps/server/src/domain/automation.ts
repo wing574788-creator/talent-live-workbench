@@ -17,6 +17,14 @@ export function todayShanghai(now = new Date()): string {
 }
 
 /**
+ * 把"日期或带时间的 ISO 时间（UTC）"换成北京时间的日期。纯日期原样返回。
+ * 不能直接 slice(0, 10)：北京时间 00:00–08:00 的 UTC 日期还是前一天。
+ */
+export function dateShanghai(value: string): string {
+  return value.length <= 10 ? value : todayShanghai(new Date(value));
+}
+
+/**
  * 合作阶段自动推进（PRD 5.3 验收）：
  *   新建待寄样单 → 待寄样；寄出 → 已排期；开播日过后 → 已开播；
  *   开播后仍有在外样品 → 待退样；样品结清 → 待复盘。
