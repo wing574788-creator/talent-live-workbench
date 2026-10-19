@@ -3,12 +3,16 @@ import { useState } from 'react';
 import { SamplesPanel } from '../components/samples.tsx';
 import { useAction } from '../components/detail.tsx';
 import {
+  Avatar,
   Badge,
   Button,
   Drawer,
   Empty,
   Field,
   Modal,
+  PageHeader,
+  PillTabs,
+  TABLE,
   TextInput,
   useToast,
 } from '../components/ui.tsx';
@@ -34,23 +38,17 @@ export function SamplesPage() {
   const [picking, setPicking] = useState(false);
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="m-0 text-2xl font-bold">寄样</h1>
-        <Button variant="primary" onClick={() => setPicking(true)}>
+      <PageHeader title="寄样" hint="样品按达人记账：在外 = 累计寄出 − 退回 − 核销，自动计算">
+        <Button variant="primary" className="!min-h-11" onClick={() => setPicking(true)}>
           登记退回…
         </Button>
-      </div>
-      <div className="flex flex-wrap gap-2" role="tablist" aria-label="寄样筛选">
-        {TABS.map((t) => (
-          <Button
-            key={t.key || 'all'}
-            variant={tab === t.key ? 'primary' : 'secondary'}
-            onClick={() => setTab(t.key)}
-          >
-            {t.label}
-          </Button>
-        ))}
-      </div>
+      </PageHeader>
+      <PillTabs
+        label="寄样筛选"
+        tabs={TABS.map((t) => ({ key: t.key as string, label: t.label }))}
+        value={tab}
+        onChange={setTab}
+      />
       {tab === 'pendingShip' ? (
         <PendingShipments onOpen={setOpenInf} />
       ) : (
@@ -85,12 +83,12 @@ function Summary({ filter, onOpen }: { filter: string; onOpen: (i: Row) => void 
   });
   const rows = q.data?.rows ?? [];
   return (
-    <div className="overflow-x-auto rounded-xl border border-line bg-surface">
+    <div className={TABLE.wrap}>
       <table className="w-full border-collapse text-left">
         <thead>
-          <tr className="border-b border-line bg-bg text-[13px] text-muted">
+          <tr className={TABLE.headRow}>
             {['达人', '在外', '逾期', '待寄样', '质检待处理', '回收问题'].map((h) => (
-              <th key={h} className="whitespace-nowrap px-3 py-2.5 font-medium">
+              <th key={h} className={TABLE.th}>
                 {h}
               </th>
             ))}
@@ -98,23 +96,37 @@ function Summary({ filter, onOpen }: { filter: string; onOpen: (i: Row) => void 
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr
-              key={r.influencer.id}
-              className="cursor-pointer border-b border-line last:border-0 hover:bg-bg"
-              onClick={() => onOpen(r.influencer)}
-            >
-              <td className="px-3 py-2.5">
-                <b>{r.influencer.nickname}</b> {r.settled && <Badge tone="green">已结清</Badge>}
+            <tr key={r.influencer.id} className={TABLE.row} onClick={() => onOpen(r.influencer)}>
+              <td className={TABLE.td}>
+                <span className="flex items-center gap-3">
+                  <Avatar name={String(r.influencer.nickname)} />
+                  <b className="text-[15px]">{r.influencer.nickname}</b>
+                  {r.settled && <Badge tone="green">已结清</Badge>}
+                </span>
               </td>
-              <td className="px-3 py-2.5">{r.outstanding} 件</td>
-              <td className={`px-3 py-2.5 ${r.overdueQty ? 'font-bold text-warn' : 'text-muted'}`}>
-                {r.overdueQty ? `${r.overdueQty} 件` : '—'}
+              <td className={TABLE.td}>
+                <b className="text-lg">{r.outstanding}</b> <span className="text-muted">件</span>
               </td>
-              <td className="px-3 py-2.5">{r.pendingShip || '—'}</td>
-              <td className={`px-3 py-2.5 ${r.qaPending ? 'text-warn' : 'text-muted'}`}>
-                {r.qaPending || '—'}
+              <td className={TABLE.td}>
+                {r.overdueQty ? (
+                  <span className="rounded-full bg-warn-soft px-2.5 py-0.5 text-xs font-extrabold text-warn">
+                    逾期 {r.overdueQty} 件
+                  </span>
+                ) : (
+                  <span className="text-muted">—</span>
+                )}
               </td>
-              <td className="px-3 py-2.5">{r.recycleIssueCount || '—'}</td>
+              <td className={TABLE.td}>{r.pendingShip || <span className="text-muted">—</span>}</td>
+              <td className={TABLE.td}>
+                {r.qaPending ? (
+                  <Badge tone="orange">{r.qaPending}</Badge>
+                ) : (
+                  <span className="text-muted">—</span>
+                )}
+              </td>
+              <td className={TABLE.td}>
+                {r.recycleIssueCount || <span className="text-muted">—</span>}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -187,22 +199,23 @@ function PendingShipments({ onOpen }: { onOpen: (i: Row) => void }) {
           使用达人的默认收货地址；没有地址的会失败并提示。
         </span>
       </div>
-      <div className="rounded-xl border border-line bg-surface">
+      <div className="flex flex-col gap-3">
         {rows.map((r) => {
           const waited = days(r.createdAt);
           return (
             <div
               key={r.id}
-              className="flex items-start gap-3 border-b border-line px-4 py-3 last:border-0"
+              className="flex items-start gap-4 rounded-3xl bg-surface p-5 shadow-[0_1px_0_var(--color-line)]"
             >
               <input
                 type="checkbox"
                 aria-label={`选择 ${r.influencerNickname} 的待寄样单`}
                 checked={picked.has(r.id)}
                 onChange={() => toggle(r.id)}
-                className="mt-1"
+                className="mt-2 size-4 cursor-pointer accent-[#4f46e5]"
               />
-              <div className="flex-1">
+              <Avatar name={String(r.influencerNickname)} size={40} />
+              <div className="min-w-0 flex-1">
                 <button
                   type="button"
                   className="cursor-pointer border-0 bg-transparent p-0 font-bold text-brand"
@@ -210,15 +223,19 @@ function PendingShipments({ onOpen }: { onOpen: (i: Row) => void }) {
                 >
                   {r.influencerNickname}
                 </button>
-                <div>
-                  {r.items
-                    .map((i: Row) => `${i.styleNo} ${i.productName} ${i.color} ${i.size} ×${i.qty}`)
-                    .join('；')}
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {r.items.map((i: Row, idx: number) => (
+                    <span key={idx} className="rounded-lg bg-bg px-2.5 py-1 text-xs font-medium">
+                      {i.styleNo} {i.productName} · {i.color} {i.size} ×{i.qty}
+                    </span>
+                  ))}
                 </div>
               </div>
               <span
                 className={
-                  waited > (q.data?.thresholdDays ?? 3) ? 'font-bold text-warn' : 'text-muted'
+                  waited > (q.data?.thresholdDays ?? 3)
+                    ? 'whitespace-nowrap rounded-full bg-warn-soft px-3 py-1 text-xs font-extrabold text-warn'
+                    : 'whitespace-nowrap text-xs text-muted'
                 }
               >
                 {fmtDate(r.createdAt)} 建单

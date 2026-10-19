@@ -292,3 +292,118 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     </ToastCtx.Provider>
   );
 }
+
+// ───────────── 视觉共用件（现代年轻风格） ─────────────
+const AVATAR_COLORS = [
+  ['#ffd3c9', '#8a2b16'],
+  ['#cff5e7', '#0b6b4f'],
+  ['#d9d5ff', '#3730a3'],
+  ['#ffe9c7', '#8a4b00'],
+];
+
+/** 圆形头像：取名字的第一个字，按名字固定配色（同一个人在哪都是同一个颜色） */
+export function Avatar({ name, size = 36 }: { name: string; size?: number }) {
+  let h = 0;
+  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % AVATAR_COLORS.length;
+  const [bg, fg] = AVATAR_COLORS[h]!;
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-flex shrink-0 items-center justify-center rounded-full font-extrabold"
+      style={{
+        width: size,
+        height: size,
+        background: bg,
+        color: fg,
+        fontSize: Math.round(size * 0.4),
+      }}
+    >
+      {name.replace(/^示例达人/, '').slice(0, 1)}
+    </span>
+  );
+}
+
+/** 药丸形的分段切换（筛选标签、视图切换） */
+export function PillTabs<T extends string>({
+  tabs,
+  value,
+  onChange,
+  label,
+}: {
+  tabs: { key: T; label: string; count?: number }[];
+  value: T;
+  onChange: (k: T) => void;
+  label: string;
+}) {
+  return (
+    <div className="flex flex-wrap gap-2" role="tablist" aria-label={label}>
+      {tabs.map((t) => (
+        <button
+          key={t.key || 'all'}
+          type="button"
+          role="tab"
+          aria-selected={value === t.key}
+          onClick={() => onChange(t.key)}
+          className={cx(
+            'min-h-9 cursor-pointer rounded-full border px-4 text-sm transition-colors',
+            value === t.key
+              ? 'border-transparent bg-brand-soft font-extrabold text-brand-dark'
+              : 'border-line bg-surface font-medium text-ink-2 hover:bg-bg',
+          )}
+        >
+          {t.label}
+          {t.count != null && <span className="ml-1.5 text-xs text-muted">{t.count}</span>}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** 页面标题：大标题 + 一行说明 + 右侧操作 */
+export function PageHeader({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: ReactNode;
+  children?: ReactNode;
+}) {
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h1 className="m-0 text-3xl font-extrabold tracking-tight">{title}</h1>
+        {hint && <div className="mt-1 text-sm text-muted">{hint}</div>}
+      </div>
+      {children && <div className="flex flex-wrap items-center gap-2.5">{children}</div>}
+    </div>
+  );
+}
+
+/** 表格外框、表头、行、单元格的统一样式 */
+export const TABLE = {
+  wrap: 'overflow-x-auto rounded-[28px] bg-surface shadow-[0_1px_0_var(--color-line)]',
+  headRow: 'border-b border-line',
+  th: 'whitespace-nowrap px-4 py-3.5 text-[13px] font-bold text-muted',
+  row: 'cursor-pointer border-b border-line transition-colors last:border-0 hover:bg-[#f8f7fd]',
+  td: 'px-4 py-3.5 align-top',
+};
+
+const PLATFORM_TONE: Record<string, string> = {
+  抖音: 'bg-ink text-white',
+  小红书: 'bg-warn-soft text-warn',
+  视频号: 'bg-mint-soft text-[#0b6b4f]',
+};
+/** 平台标签：每个平台一个颜色，列表里一眼能分出来 */
+export function PlatformTag({ platform }: { platform: string }) {
+  return (
+    <span
+      className={cx(
+        'inline-block rounded-full px-2.5 py-0.5 text-xs font-bold',
+        PLATFORM_TONE[platform] ?? 'bg-bg text-muted',
+      )}
+    >
+      {platform}
+    </span>
+  );
+}

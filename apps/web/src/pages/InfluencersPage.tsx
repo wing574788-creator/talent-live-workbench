@@ -22,6 +22,7 @@ import {
   useReveal,
 } from '../components/detail.tsx';
 import {
+  Avatar,
   Badge,
   Button,
   ConfirmDialog,
@@ -29,6 +30,8 @@ import {
   Empty,
   Field,
   Modal,
+  PageHeader,
+  PlatformTag,
   Select,
   Tabs,
   TextInput,
@@ -66,23 +69,46 @@ const ACCOUNT_SPECS: FieldSpec[] = [
 const isStale = (d?: string | null) => !!d && Date.now() - new Date(d).getTime() > 90 * 86400_000;
 
 const COLS: Col<Row>[] = [
-  { id: 'nickname', header: '昵称', sort: 'nickname', cell: (r) => <b>{r.nickname}</b> },
+  {
+    id: 'nickname',
+    header: '昵称',
+    sort: 'nickname',
+    cell: (r) => (
+      <span className="flex items-center gap-3">
+        <Avatar name={String(r.nickname)} />
+        <b className="text-[15px]">{r.nickname}</b>
+      </span>
+    ),
+  },
   {
     id: 'accounts',
     header: '平台账号',
     cell: (r) => (
       <div className="flex flex-col gap-0.5">
         {r.accounts.map((a: Row) => (
-          <span key={a.id}>
-            <Badge>{a.platform}</Badge> {a.accountId}
+          <span key={a.id} className="flex items-center gap-2">
+            <PlatformTag platform={a.platform} />
+            <span className="text-muted">{a.accountId}</span>
           </span>
         ))}
       </div>
     ),
   },
   { id: 'tags', header: '类目', cell: (r) => (r.categoryTags ?? []).join('、') },
-  { id: 'rating', header: '评级', sort: 'rating', cell: (r) => r.rating ?? '' },
-  { id: 'coopCount', header: '合作次数', cell: (r) => r.coopCount },
+  {
+    id: 'rating',
+    header: '评级',
+    sort: 'rating',
+    cell: (r) =>
+      r.rating ? (
+        <span className="inline-flex min-w-7 justify-center rounded-full bg-lime px-2 py-0.5 text-xs font-extrabold text-ink">
+          {r.rating}
+        </span>
+      ) : (
+        ''
+      ),
+  },
+  { id: 'coopCount', header: '合作次数', cell: (r) => <b>{r.coopCount}</b> },
   {
     id: 'recycle',
     header: '回收问题',
@@ -106,7 +132,10 @@ export function InfluencersPage() {
   const [platform, setPlatform] = useState('');
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="m-0 text-2xl font-bold">达人</h1>
+      <PageHeader
+        title="达人"
+        hint="多平台账号、合作历史和回收情况都在这里；手机、微信、地址默认打码"
+      />
       <EntityList
         entity="influencer"
         endpoint="/influencers"

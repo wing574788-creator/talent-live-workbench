@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { api, downloadFile, qs } from '../lib/api.ts';
-import { Button, ConfirmDialog, Empty, Modal, Select, TextInput, useToast } from './ui.tsx';
+import { Button, ConfirmDialog, Empty, Modal, Select, TABLE, TextInput, useToast } from './ui.tsx';
 
 export interface Col<T> {
   id: string;
@@ -258,7 +258,7 @@ export function EntityList<T extends { id: string } = any>({
           <div className="relative">
             <Button onClick={() => setShowCols(!showCols)}>列</Button>
             {showCols && (
-              <div className="absolute right-0 top-10 z-20 w-48 rounded-lg border border-line bg-surface p-2 shadow-lg">
+              <div className="absolute right-0 top-11 z-20 w-52 rounded-2xl border border-line bg-surface p-2.5 shadow-xl">
                 {allCols.map((c) => (
                   <label key={c.id} className="flex min-h-8 cursor-pointer items-center gap-2 px-1">
                     <input
@@ -286,7 +286,7 @@ export function EntityList<T extends { id: string } = any>({
       {views.data && views.data.rows.length > 0 && (
         <div className="flex flex-wrap gap-2 text-xs text-muted">
           {views.data.rows.map((v) => (
-            <span key={v.id} className="rounded-md bg-surface px-2 py-1">
+            <span key={v.id} className="rounded-full bg-surface px-3 py-1">
               {v.name}{' '}
               <button
                 type="button"
@@ -301,23 +301,20 @@ export function EntityList<T extends { id: string } = any>({
         </div>
       )}
 
-      <div className="overflow-x-auto rounded-xl border border-line bg-surface">
+      <div className={TABLE.wrap}>
         <table className="w-full border-collapse text-left">
           <thead>
             {table.getHeaderGroups().map((hg) => (
-              <tr key={hg.id} className="border-b border-line bg-bg">
+              <tr key={hg.id} className={TABLE.headRow}>
                 {hg.headers.map((h) => {
                   const sort = (h.column.columnDef.meta as { sort?: string } | undefined)?.sort;
                   const active = sort && cfg.sort === sort;
                   return (
-                    <th
-                      key={h.id}
-                      className="whitespace-nowrap px-3 py-2.5 text-[13px] font-medium text-muted"
-                    >
+                    <th key={h.id} className={TABLE.th}>
                       {sort ? (
                         <button
                           type="button"
-                          className="cursor-pointer border-0 bg-transparent p-0 font-medium text-inherit"
+                          className="cursor-pointer border-0 bg-transparent p-0 font-bold text-inherit"
                           onClick={() =>
                             setCfg({
                               ...cfg,
@@ -340,13 +337,9 @@ export function EntityList<T extends { id: string } = any>({
           </thead>
           <tbody>
             {table.getRowModel().rows.map((r) => (
-              <tr
-                key={r.id}
-                className="cursor-pointer border-b border-line last:border-0 hover:bg-bg"
-                onClick={() => onOpen(r.id)}
-              >
+              <tr key={r.id} className={TABLE.row} onClick={() => onOpen(r.id)}>
                 {r.getVisibleCells().map((c) => (
-                  <td key={c.id} className="px-3 py-2.5 align-top">
+                  <td key={c.id} className={TABLE.td}>
                     {flexRender(c.column.columnDef.cell, c.getContext())}
                   </td>
                 ))}
