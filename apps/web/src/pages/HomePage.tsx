@@ -11,24 +11,53 @@ import { CooperationDrawer } from './CooperationDrawer.tsx';
 
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-const card = 'rounded-xl border border-line bg-surface px-5 py-4';
+const card = 'rounded-[28px] bg-surface px-6 py-5 shadow-[0_1px_0_var(--color-line)]';
+
+const TONES = {
+  indigo: 'bg-brand text-white',
+  white: 'bg-surface text-ink shadow-[0_1px_0_var(--color-line)]',
+  lime: 'bg-lime text-ink',
+} as const;
 
 function Stat({
   label,
   value,
+  unit,
   note,
   warn,
+  tone = 'white',
 }: {
   label: string;
   value: string;
+  unit?: string;
   note: React.ReactNode;
   warn?: boolean;
+  tone?: keyof typeof TONES;
 }) {
   return (
-    <div className={card}>
-      <div className="text-muted">{label}</div>
-      <div className="mt-1 text-3xl font-bold">{value}</div>
-      <div className={`text-[13px] ${warn ? 'text-warn' : 'text-muted'}`}>{note}</div>
+    <div className={`flex min-h-33 flex-col gap-1.5 rounded-[26px] p-5.5 ${TONES[tone]}`}>
+      <div className={`text-sm font-medium ${tone === 'white' ? 'text-muted' : 'opacity-90'}`}>
+        {label}
+      </div>
+      <div className="text-5xl font-extrabold leading-none tracking-tight">
+        {value}
+        {unit && <span className="ml-1 text-xl font-bold text-muted">{unit}</span>}
+      </div>
+      <div
+        className={`mt-auto inline-flex self-start rounded-full px-2.5 py-0.5 text-xs font-extrabold ${
+          warn
+            ? tone === 'white'
+              ? 'bg-warn-soft text-warn'
+              : 'bg-white text-warn'
+            : tone === 'lime'
+              ? 'text-ink'
+              : tone === 'white'
+                ? 'bg-bg text-muted'
+                : 'bg-white/20 text-white'
+        }`}
+      >
+        {note}
+      </div>
     </div>
   );
 }
@@ -50,35 +79,51 @@ export function HomePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="m-0 text-2xl font-bold">
-          {c.dueFollow.count ? `今天有 ${c.dueFollow.count} 项待跟进` : '今天没有待跟进的事项'}
+      <header>
+        <div className="text-sm font-medium text-muted">{fmtDate(d.today)}</div>
+        <h1 className="m-0 mt-1 text-4xl font-extrabold leading-tight tracking-tight">
+          {c.dueFollow.count ? (
+            <>
+              今天有 <span className="rounded-xl bg-lime px-2.5">{c.dueFollow.count} 项</span>{' '}
+              待跟进
+            </>
+          ) : (
+            '今天没有待跟进的事项'
+          )}
         </h1>
-        <p className="mt-1.5 text-muted">{fmtDate(d.today)} · 数据实时统计</p>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
         <Stat
+          tone="indigo"
           label="今日待跟进"
           value={String(c.dueFollow.count)}
-          note={c.dueFollow.overdue ? `其中 ${c.dueFollow.overdue} 项已逾期` : '没有逾期'}
+          note={c.dueFollow.overdue ? `${c.dueFollow.overdue} 项已逾期` : '没有逾期'}
           warn={c.dueFollow.overdue > 0}
         />
         <Stat
           label="在外样品"
-          value={`${c.samples.outstanding} 件`}
+          value={String(c.samples.outstanding)}
+          unit="件"
           note={c.samples.overdueQty ? `${c.samples.overdueQty} 件逾期未寄回` : '没有逾期'}
           warn={c.samples.overdueQty > 0}
         />
         <Stat
           label="近 7 天开播"
-          value={`${c.live7.count} 场`}
+          value={String(c.live7.count)}
+          unit="场"
           note={c.live7.unconfirmed ? `${c.live7.unconfirmed} 场佣金未确认` : '佣金都已确认'}
+          warn={c.live7.unconfirmed > 0}
         />
         <Stat
+          tone="lime"
           label="待审核改动"
           value={String(c.pendingReview)}
-          note={<Link to="/review">去审核</Link>}
+          note={
+            <Link to="/review" className="text-ink no-underline">
+              去审核 →
+            </Link>
+          }
         />
       </div>
 

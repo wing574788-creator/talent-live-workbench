@@ -1,18 +1,25 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/manrope';
 
 @theme {
-  --color-bg: #f6f5f1;
+  --color-bg: #f3f2fa;
   --color-surface: #ffffff;
-  --color-line: #e3e1da;
-  --color-line-strong: #d6d3cb;
-  --color-ink: #1c1b19;
-  --color-ink-2: #3f3d38;
-  --color-muted: #5e5b54;
-  --color-brand: #0e6b5e;
-  --color-brand-dark: #0a4f45;
-  --color-brand-soft: #e3f0ed;
-  --color-warn: #b4410f;
-  --font-sans: 'Noto Sans SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --color-line: #e8e6f5;
+  --color-line-strong: #dad7ee;
+  --color-ink: #16152b;
+  --color-ink-2: #46455f;
+  --color-muted: #6b6a85;
+  --color-brand: #4f46e5;
+  --color-brand-dark: #3730a3;
+  --color-brand-soft: #e7e4ff;
+  --color-lime: #c8f560;
+  --color-warn: #b42318;
+  --color-warn-soft: #ffe5df;
+  --color-amber-soft: #ffe9c7;
+  --color-mint-soft: #cff5e7;
+  --font-sans:
+    'Manrope Variable', 'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif;
+  --radius-card: 28px;
 }
 
 body {
@@ -27,5 +34,9 @@ body {
 @layer base {
   a {
     color: var(--color-brand);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
   }
 }

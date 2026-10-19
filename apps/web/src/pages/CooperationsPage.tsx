@@ -44,22 +44,33 @@ export function CooperationsPage() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="m-0 text-2xl font-bold">合作</h1>
-        <div className="flex gap-2">
-          <Button
-            variant={view === 'board' ? 'primary' : 'secondary'}
-            onClick={() => setView('board')}
-          >
-            看板
-          </Button>
-          <Button
-            variant={view === 'list' ? 'primary' : 'secondary'}
-            onClick={() => setView('list')}
-          >
-            列表
-          </Button>
-          <Button variant="primary" onClick={() => setCreating(true)}>
-            新建合作
+        <div>
+          <h1 className="m-0 text-3xl font-extrabold tracking-tight">合作</h1>
+          <div className="mt-1 text-sm text-muted">
+            {view === 'board' ? '拖动卡片换阶段，点开看详情' : '用表格看全部合作，可排序和筛选'}
+          </div>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <div className="flex rounded-2xl border border-line bg-surface p-1">
+            {(
+              [
+                ['board', '看板'],
+                ['list', '列表'],
+              ] as const
+            ).map(([k, label]) => (
+              <button
+                key={k}
+                type="button"
+                aria-pressed={view === k}
+                onClick={() => setView(k)}
+                className={`min-h-9 cursor-pointer rounded-xl border-0 px-4 text-sm ${view === k ? 'bg-ink font-bold text-white' : 'bg-transparent font-medium text-ink-2'}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <Button variant="primary" className="!min-h-11" onClick={() => setCreating(true)}>
+            + 新建合作
           </Button>
         </div>
       </div>
@@ -164,17 +175,58 @@ function Column({
     <section
       ref={setNodeRef}
       aria-label={stage}
-      className={`flex w-[270px] shrink-0 flex-col gap-2 rounded-xl border p-2 ${isOver ? 'border-brand bg-brand-soft' : 'border-line bg-bg'}`}
+      className={`flex w-[270px] shrink-0 flex-col gap-3 rounded-3xl bg-[#e9e7f7] p-3 ${isOver ? 'outline-2 -outline-offset-2 outline-brand outline-dashed' : ''}`}
     >
-      <h3 className="m-0 flex items-center justify-between px-1 text-sm font-bold">
-        {stage}
-        <span className="font-normal text-muted">{cards.length}</span>
+      <h3 className="m-0 flex items-center justify-between px-1.5 pt-1 text-sm font-extrabold">
+        <span className="flex items-center gap-2">
+          <span
+            aria-hidden="true"
+            className="size-2.5 rounded-full"
+            style={{ background: STAGE_DOT[stage] ?? '#8e88ff' }}
+          />
+          {stage}
+        </span>
+        <span className="min-w-6 rounded-full bg-surface px-2 text-center text-xs font-extrabold">
+          {cards.length}
+        </span>
       </h3>
+      {isOver && (
+        <div className="rounded-[20px] border-2 border-dashed border-[#8e88ff] bg-[#f3f2ff] p-3.5 text-center text-[13px] font-bold text-brand-dark">
+          松手放到这里
+        </div>
+      )}
       {cards.map((c) => (
         <CardView key={c.id} c={c} today={today} onOpen={onOpen} />
       ))}
     </section>
   );
+}
+
+/** 每个阶段一个状态色点 */
+const STAGE_DOT: Record<string, string> = {
+  待建联: '#a3a1bd',
+  洽谈中: '#4f46e5',
+  已确认: '#2fbf8f',
+  待寄样: '#ffb020',
+  已排期: '#8e88ff',
+  已开播: '#ff6f59',
+  待退样: '#e0568a',
+  待复盘: '#5aa9e6',
+  完成: '#16152b',
+};
+
+const AVATARS = [
+  ['#ffd3c9', '#8a2b16'],
+  ['#cff5e7', '#0b6b4f'],
+  ['#d9d5ff', '#3730a3'],
+  ['#ffe9c7', '#8a4b00'],
+];
+/** 按昵称固定一个头像配色，同一个达人在哪都是同一个颜色 */
+function avatarStyle(name: string) {
+  let h = 0;
+  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % AVATARS.length;
+  const [bg, fg] = AVATARS[h]!;
+  return { background: bg, color: fg };
 }
 
 function SideDrop({ stage, count }: { stage: string; count: number }) {
@@ -203,11 +255,22 @@ function CardView({ c, today, onOpen }: { c: Row; today: string; onOpen: (id: st
         transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
         zIndex: isDragging ? 30 : undefined,
       }}
-      className={`cursor-grab rounded-lg border border-line bg-surface p-3 text-[13px] shadow-sm ${isDragging ? 'opacity-80 shadow-lg' : ''}`}
+      className={`cursor-grab rounded-[20px] bg-surface p-4 text-[13px] shadow-[0_2px_0_var(--color-line-strong)] ${isDragging ? 'rotate-1 opacity-90 shadow-xl' : ''}`}
     >
-      <div className="flex items-center justify-between gap-2">
-        <b className="text-sm">{c.influencerNickname}</b>
-        {c.platform && <Badge>{c.platform}</Badge>}
+      <div className="flex items-center gap-2.5">
+        <span
+          aria-hidden="true"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-extrabold"
+          style={avatarStyle(String(c.influencerNickname))}
+        >
+          {String(c.influencerNickname)
+            .replace(/^示例达人/, '')
+            .slice(0, 1)}
+        </span>
+        <div className="min-w-0 flex-1">
+          <b className="block truncate text-sm">{c.influencerNickname}</b>
+          {c.platform && <span className="text-xs text-muted">{c.platform}</span>}
+        </div>
       </div>
       <div className="mt-1 text-muted">{followLine(c)}</div>
       {c.nextFollowDate && (

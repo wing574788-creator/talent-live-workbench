@@ -40,38 +40,48 @@ export function SummaryCard({ highlights }: { highlights: string[] }) {
     }
   }
 
+  const bullets = lines?.length ? lines : highlights;
   return (
-    <section aria-label="今日概况" className="rounded-xl border border-line bg-surface px-5 py-4">
+    <section aria-label="今日概况" className="rounded-[28px] bg-ink px-6 py-5 text-white">
       <div className="flex items-center justify-between gap-2">
-        <div className="text-[13px] font-medium text-brand">
+        <div className="flex items-center gap-2.5 text-[15px] font-extrabold">
+          <span className="flex size-7 items-center justify-center rounded-[10px] bg-lime">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="#16152b">
+              <path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z" />
+            </svg>
+          </span>
           今日概况{lines?.length ? ' · AI 摘要' : ''}
         </div>
         {s?.available && (
-          <Button className="!min-h-7 !px-2" disabled={busy || q.isFetching} onClick={regenerate}>
+          <Button
+            className="!min-h-8 !border-[#4a4970] !bg-transparent !px-3 !text-xs !text-[#e6e5f5] hover:!bg-white/10"
+            disabled={busy || q.isFetching}
+            onClick={regenerate}
+          >
             {busy ? '生成中…' : '重新生成'}
           </Button>
         )}
       </div>
       {q.isFetching && !s ? (
-        <p className="mb-0 mt-2 text-muted">AI 正在整理今天的概况…</p>
-      ) : lines?.length ? (
-        <ul className="mb-0 mt-2 flex list-disc flex-col gap-1 pl-5">
-          {lines.map((l) => (
-            <li key={l}>
-              <RichText text={l} />
+        <p className="mb-0 mt-3 text-[#a9a8c8]">AI 正在整理今天的概况…</p>
+      ) : bullets.length ? (
+        <ul className="m-0 mt-3 flex list-none flex-col gap-3 p-0 text-[15px] leading-relaxed">
+          {bullets.map((l, i) => (
+            <li key={l} className="flex gap-3">
+              <span
+                className="mt-2.5 size-2 shrink-0 rounded-full"
+                style={{ background: ['#ff6f59', '#c8f560', '#8e88ff'][i % 3] }}
+              />
+              <span className="[&_button]:!text-lime">
+                <RichText text={l} />
+              </span>
             </li>
           ))}
         </ul>
-      ) : highlights.length ? (
-        <ul className="mb-0 mt-2 flex list-disc flex-col gap-1 pl-5">
-          {highlights.map((h) => (
-            <li key={h}>{h}</li>
-          ))}
-        </ul>
       ) : (
-        <p className="mb-0 mt-2 text-muted">暂时没有需要特别留意的事。</p>
+        <p className="mb-0 mt-3 text-[#a9a8c8]">暂时没有需要特别留意的事。</p>
       )}
-      <p className="mb-0 mt-2 text-xs text-muted">
+      <p className="mb-0 mt-3 text-xs text-[#a9a8c8]">
         {lines?.length
           ? `${s?.cached ? '今天已生成过，' : ''}${s?.generatedAt ? fmtDateTime(s.generatedAt) + ' 生成；' : ''}发给模型的只有昵称、阶段、天数等摘要信息。`
           : s?.error
@@ -91,7 +101,7 @@ export function QuickEntry() {
   return (
     <form
       aria-label="一句话录入"
-      className="rounded-xl border border-line bg-surface px-5 py-4"
+      className="rounded-[28px] bg-surface px-6 py-5 shadow-[0_1px_0_var(--color-line)]"
       onSubmit={(e) => {
         e.preventDefault();
         if (!text.trim()) return;

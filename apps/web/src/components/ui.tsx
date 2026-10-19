@@ -15,8 +15,8 @@ export const cx = (...a: (string | false | undefined)[]) => a.filter(Boolean).jo
 
 const BTN = {
   primary: 'bg-brand text-white hover:bg-brand-dark border-transparent',
-  secondary: 'bg-surface text-ink-2 border-line-strong hover:bg-bg',
-  danger: 'bg-surface text-warn border-warn hover:bg-red-50',
+  secondary: 'bg-surface text-ink border-line-strong hover:bg-bg',
+  danger: 'bg-surface text-warn border-warn hover:bg-warn-soft',
   ghost: 'bg-transparent text-brand border-transparent hover:bg-brand-soft',
 };
 
@@ -30,7 +30,7 @@ export function Button({
       type="button"
       {...p}
       className={cx(
-        'min-h-9 cursor-pointer whitespace-nowrap rounded-lg border px-3.5 text-sm disabled:cursor-not-allowed disabled:opacity-50',
+        'min-h-9 cursor-pointer whitespace-nowrap rounded-xl border px-4 text-sm font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50',
         BTN[variant],
         className,
       )}
@@ -39,7 +39,7 @@ export function Button({
 }
 
 const inputCls =
-  'min-h-9 w-full rounded-lg border border-line-strong bg-surface px-3 text-sm disabled:bg-bg disabled:text-muted';
+  'min-h-10 w-full rounded-xl border border-line-strong bg-surface px-3 text-sm disabled:bg-bg disabled:text-muted';
 
 export const TextInput = (p: InputHTMLAttributes<HTMLInputElement>) => (
   <input {...p} className={cx(inputCls, p.className)} />
@@ -79,10 +79,10 @@ export function Card({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-xl border border-line bg-surface px-5 py-4">
+    <section className="rounded-[28px] bg-surface px-6 py-5 shadow-[0_1px_0_var(--color-line)]">
       {(title || actions) && (
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h3 className="m-0 text-[15px] font-bold">{title}</h3>
+          <h3 className="m-0 text-lg font-extrabold">{title}</h3>
           <div className="flex gap-2">{actions}</div>
         </div>
       )}
@@ -100,11 +100,15 @@ export function Badge({
 }) {
   const t = {
     gray: 'bg-bg text-muted',
-    green: 'bg-brand-soft text-brand',
-    orange: 'bg-orange-50 text-warn',
-    red: 'bg-red-50 text-red-700',
+    green: 'bg-brand-soft text-brand-dark',
+    orange: 'bg-amber-soft text-[#8a4b00]',
+    red: 'bg-warn-soft text-warn',
   }[tone];
-  return <span className={cx('inline-block rounded-md px-2 py-0.5 text-xs', t)}>{children}</span>;
+  return (
+    <span className={cx('inline-block rounded-full px-2.5 py-0.5 text-xs font-bold', t)}>
+      {children}
+    </span>
+  );
 }
 
 export function Tabs({
@@ -196,7 +200,7 @@ export function Modal({
       onMouseDown={onClose}
     >
       <div
-        className="flex max-h-[90vh] w-full flex-col rounded-xl bg-surface shadow-xl"
+        className="flex max-h-[90vh] w-full flex-col rounded-3xl bg-surface shadow-xl"
         style={{ maxWidth: width }}
         onMouseDown={(e) => e.stopPropagation()}
         role="dialog"
