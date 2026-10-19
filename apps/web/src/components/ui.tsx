@@ -1,5 +1,7 @@
+import { AnimatePresence, animate, motion, useReducedMotion } from 'motion/react';
 import {
   createContext,
+  useRef,
   useCallback,
   useContext,
   useEffect,
@@ -157,32 +159,46 @@ export function Drawer({
   children: ReactNode;
   width?: number;
 }) {
+  const [shown, setShown] = useState(true);
+  const close = useCallback(() => setShown(false), []);
   useEffect(() => {
-    const h = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const h = (e: KeyboardEvent) => e.key === 'Escape' && close();
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
-  }, [onClose]);
+  }, [close]);
   return (
-    <div
-      className="fixed inset-0 z-40 flex justify-end bg-ink/35 backdrop-blur-[2px]"
-      onMouseDown={onClose}
-    >
-      <aside
-        className="flex h-full max-w-full flex-col rounded-l-[32px] bg-bg shadow-2xl"
-        style={{ width }}
-        onMouseDown={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-label="详情"
-      >
-        <header className="flex items-center justify-between gap-3 px-6 pb-2 pt-5">
-          <h2 className="m-0 text-2xl font-extrabold tracking-tight">{title}</h2>
-          <Button variant="ghost" onClick={onClose}>
-            关闭
-          </Button>
-        </header>
-        <div className="flex-1 overflow-y-auto px-6 pb-6 pt-3">{children}</div>
-      </aside>
-    </div>
+    <AnimatePresence onExitComplete={onClose}>
+      {shown && (
+        <motion.div
+          className="fixed inset-0 z-40 flex justify-end bg-ink/35 backdrop-blur-[2px]"
+          onMouseDown={close}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+        >
+          <motion.aside
+            className="flex h-full max-w-full flex-col rounded-l-[32px] bg-bg shadow-2xl"
+            style={{ width }}
+            onMouseDown={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-label="详情"
+            initial={{ x: 48, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 48, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 420, damping: 38 }}
+          >
+            <header className="flex items-center justify-between gap-3 px-6 pb-2 pt-5">
+              <h2 className="m-0 text-2xl font-extrabold tracking-tight">{title}</h2>
+              <Button variant="ghost" onClick={close}>
+                关闭
+              </Button>
+            </header>
+            <div className="flex-1 overflow-y-auto px-6 pb-6 pt-3">{children}</div>
+          </motion.aside>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -199,27 +215,41 @@ export function Modal({
   footer?: ReactNode;
   width?: number;
 }) {
+  const [shown, setShown] = useState(true);
+  const close = useCallback(() => setShown(false), []);
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      onMouseDown={onClose}
-    >
-      <div
-        className="flex max-h-[90vh] w-full flex-col rounded-3xl bg-surface shadow-xl"
-        style={{ maxWidth: width }}
-        onMouseDown={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-label={title}
-      >
-        <header className="border-b border-line px-5 py-3 text-base font-bold">{title}</header>
-        <div className="flex-1 overflow-y-auto px-6 pb-6 pt-3">{children}</div>
-        {footer && (
-          <footer className="flex justify-end gap-2 border-t border-line px-5 py-3">
-            {footer}
-          </footer>
-        )}
-      </div>
-    </div>
+    <AnimatePresence onExitComplete={onClose}>
+      {shown && (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
+          onMouseDown={close}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+        >
+          <motion.div
+            className="flex max-h-[90vh] w-full flex-col rounded-3xl bg-surface shadow-xl"
+            style={{ maxWidth: width }}
+            onMouseDown={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-label={title}
+            initial={{ scale: 0.96, y: 12, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            exit={{ scale: 0.97, y: 6, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 460, damping: 34 }}
+          >
+            <header className="border-b border-line px-5 py-3 text-base font-bold">{title}</header>
+            <div className="flex-1 overflow-y-auto px-6 pb-6 pt-3">{children}</div>
+            {footer && (
+              <footer className="flex justify-end gap-2 border-t border-line px-5 py-3">
+                {footer}
+              </footer>
+            )}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -282,17 +312,24 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         className="fixed bottom-6 left-1/2 z-[60] flex -translate-x-1/2 flex-col gap-2"
         aria-live="polite"
       >
-        {items.map((i) => (
-          <div
-            key={i.id}
-            className={cx(
-              'rounded-lg px-4 py-2 text-sm text-white shadow-lg',
-              i.kind === 'error' ? 'bg-warn' : 'bg-ink',
-            )}
-          >
-            {i.msg}
-          </div>
-        ))}
+        <AnimatePresence>
+          {items.map((i) => (
+            <motion.div
+              key={i.id}
+              layout
+              initial={{ opacity: 0, y: 16, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.97 }}
+              transition={{ type: 'spring', stiffness: 460, damping: 32 }}
+              className={cx(
+                'rounded-2xl px-4 py-2.5 text-sm font-medium text-white shadow-lg',
+                i.kind === 'error' ? 'bg-warn' : 'bg-ink',
+              )}
+            >
+              {i.msg}
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </ToastCtx.Provider>
   );
@@ -411,4 +448,25 @@ export function PlatformTag({ platform }: { platform: string }) {
       {platform}
     </span>
   );
+}
+
+/** 数字从 0 滚动到目标值（只在首屏出现和数值变化时动一下；系统设了"减少动效"就直接显示） */
+export function CountUp({ value }: { value: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const reduce = useReducedMotion();
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (reduce) {
+      el.textContent = String(value);
+      return;
+    }
+    const c = animate(0, value, {
+      duration: 0.7,
+      ease: 'easeOut',
+      onUpdate: (v) => (el.textContent = String(Math.round(v))),
+    });
+    return () => c.stop();
+  }, [value, reduce]);
+  return <span ref={ref}>{value}</span>;
 }

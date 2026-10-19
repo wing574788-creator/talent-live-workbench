@@ -1,10 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link, Outlet } from '@tanstack/react-router';
+import { Link, Outlet, useRouterState } from '@tanstack/react-router';
 import { NAV_ITEMS } from '@workbench/shared';
+import { motion } from 'motion/react';
 import type { ReactNode } from 'react';
 import { AiPanelProvider, useAiPanel } from './ai/AiPanel.tsx';
 import { AiSidebar } from './ai/AiSidebar.tsx';
 import { RecordHost } from './ai/RecordHost.tsx';
+
+/** 以阅读和填表为主的页面限宽居中；看板和大表格保持流式铺满（见 DECISIONS） */
+const NARROW_PAGES: Record<string, string> = {
+  '/': 'max-w-[1360px]',
+  '/review': 'max-w-[1200px]',
+  '/import': 'max-w-[1200px]',
+  '/settings': 'max-w-[1200px]',
+};
 
 const navBase =
   'flex min-h-11 items-center justify-between rounded-2xl px-3.5 text-sm no-underline transition-colors';
@@ -90,6 +99,8 @@ function Shell() {
     queryFn: async () => (await (await fetch('/api/review/pending')).json()) as { rows: unknown[] },
   });
   const pendingCount = pending.data?.rows.length ?? 0;
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const widthCls = NARROW_PAGES[pathname] ?? '';
 
   return (
     <div className="flex min-h-screen">
@@ -149,7 +160,15 @@ function Shell() {
       </nav>
 
       <main className="min-w-0 flex-1 px-9 pb-12 pt-8">
-        <Outlet />
+        <motion.div
+          key={pathname}
+          className={`${widthCls} ${widthCls ? 'mx-auto' : ''}`}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, ease: 'easeOut' }}
+        >
+          <Outlet />
+        </motion.div>
       </main>
 
       {open ? (

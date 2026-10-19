@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
+import { motion } from 'motion/react';
 import { useState } from 'react';
 import { QuickEntry, SummaryCard } from '../components/ai/HomeAi.tsx';
 import { FollowUpDialog, type FollowTarget } from '../components/FollowUp.tsx';
 import { SamplesPanel } from '../components/samples.tsx';
-import { Badge, Button, Drawer, Empty } from '../components/ui.tsx';
+import { Badge, Button, CountUp, Drawer, Empty } from '../components/ui.tsx';
 import { api } from '../lib/api.ts';
 import { fmtDate } from '../lib/format.ts';
 import { CooperationDrawer } from './CooperationDrawer.tsx';
@@ -26,21 +27,29 @@ function Stat({
   note,
   warn,
   tone = 'white',
+  index = 0,
 }: {
+  index?: number;
   label: string;
-  value: string;
+  value: number;
   unit?: string;
   note: React.ReactNode;
   warn?: boolean;
   tone?: keyof typeof TONES;
 }) {
   return (
-    <div className={`flex min-h-33 flex-col gap-1.5 rounded-[26px] p-5.5 ${TONES[tone]}`}>
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -3 }}
+      transition={{ duration: 0.3, delay: index * 0.06, ease: 'easeOut' }}
+      className={`flex min-h-33 flex-col gap-1.5 rounded-[26px] p-5.5 ${TONES[tone]}`}
+    >
       <div className={`text-sm font-medium ${tone === 'white' ? 'text-muted' : 'opacity-90'}`}>
         {label}
       </div>
       <div className="text-5xl font-extrabold leading-none tracking-tight">
-        {value}
+        <CountUp value={value} />
         {unit && <span className="ml-1 text-xl font-bold text-muted">{unit}</span>}
       </div>
       <div
@@ -58,7 +67,7 @@ function Stat({
       >
         {note}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -96,29 +105,33 @@ export function HomePage() {
       <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
         <Stat
           tone="indigo"
+          index={0}
           label="今日待跟进"
-          value={String(c.dueFollow.count)}
+          value={c.dueFollow.count}
           note={c.dueFollow.overdue ? `${c.dueFollow.overdue} 项已逾期` : '没有逾期'}
           warn={c.dueFollow.overdue > 0}
         />
         <Stat
+          index={1}
           label="在外样品"
-          value={String(c.samples.outstanding)}
+          value={c.samples.outstanding}
           unit="件"
           note={c.samples.overdueQty ? `${c.samples.overdueQty} 件逾期未寄回` : '没有逾期'}
           warn={c.samples.overdueQty > 0}
         />
         <Stat
+          index={2}
           label="近 7 天开播"
-          value={String(c.live7.count)}
+          value={c.live7.count}
           unit="场"
           note={c.live7.unconfirmed ? `${c.live7.unconfirmed} 场佣金未确认` : '佣金都已确认'}
           warn={c.live7.unconfirmed > 0}
         />
         <Stat
           tone="lime"
+          index={3}
           label="待审核改动"
-          value={String(c.pendingReview)}
+          value={c.pendingReview}
           note={
             <Link to="/review" className="text-ink no-underline">
               去审核 →
