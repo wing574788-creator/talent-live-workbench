@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PageHeader } from '../components/ui.tsx';
 import { useRegisterSelection } from '../lib/selection.ts';
 import { CONTACT_TYPES } from '@workbench/shared';
 import { FollowUpDialog } from '../components/FollowUp.tsx';
@@ -18,7 +19,16 @@ import {
   useDetail,
   useReveal,
 } from '../components/detail.tsx';
-import { Badge, Button, ConfirmDialog, Drawer, Empty, Modal, Tabs } from '../components/ui.tsx';
+import {
+  Avatar,
+  Badge,
+  Button,
+  ConfirmDialog,
+  Drawer,
+  Empty,
+  Modal,
+  Tabs,
+} from '../components/ui.tsx';
 import { api } from '../lib/api.ts';
 import { fmtDateTime } from '../lib/format.ts';
 
@@ -34,8 +44,25 @@ const SPECS: FieldSpec[] = [
 ];
 
 const COLS: Col<Row>[] = [
-  { id: 'name', header: '姓名', sort: 'name', cell: (r) => <b>{r.name}</b> },
-  { id: 'type', header: '类型', sort: 'type', cell: (r) => <Badge>{r.type}</Badge> },
+  {
+    id: 'name',
+    header: '姓名',
+    sort: 'name',
+    cell: (r) => (
+      <span className="flex items-center gap-3">
+        <Avatar name={String(r.name)} />
+        <b className="text-[15px]">{r.name}</b>
+      </span>
+    ),
+  },
+  {
+    id: 'type',
+    header: '类型',
+    sort: 'type',
+    cell: (r) => (
+      <Badge tone={r.type === 'MCN' || r.type === '经纪人' ? 'green' : 'gray'}>{r.type}</Badge>
+    ),
+  },
   { id: 'org', header: '所属机构', sort: 'org', cell: (r) => r.org ?? '' },
   { id: 'wechat', header: '微信', cell: (r) => r.wechat ?? '' },
   { id: 'phone', header: '手机', cell: (r) => r.phone ?? '' },
@@ -46,7 +73,10 @@ export function ContactsPage() {
   const [creating, setCreating] = useState(false);
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="m-0 text-2xl font-bold">联系人</h1>
+      <PageHeader
+        title="联系人"
+        hint="达人本人、MCN、经纪人、私人商务；微信和手机默认打码，点开才显示"
+      />
       <EntityList
         entity="contact"
         endpoint="/contacts"

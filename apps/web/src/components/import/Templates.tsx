@@ -74,7 +74,7 @@ function TemplateRow({ t, meta }: { t: Row; meta: Meta }) {
   };
 
   return (
-    <div className="rounded-lg border border-line px-3 py-2.5">
+    <div className="rounded-2xl bg-bg px-4 py-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span>
           <b>{t.name}</b> <Badge>{target?.label ?? t.entity}</Badge>{' '}

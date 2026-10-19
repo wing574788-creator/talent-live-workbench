@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { PageHeader } from '../components/ui.tsx';
 import { useState } from 'react';
 import { CUSTOM_FIELD_ENTITIES, CUSTOM_FIELD_TYPES } from '@workbench/shared';
 import { ModelsCard, OutboundCard, OutboundLogCard } from '../components/ai/AiSettings.tsx';
@@ -30,7 +31,7 @@ const TYPE_LABEL: Record<string, string> = {
 export function SettingsPage() {
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="m-0 text-2xl font-bold">设置</h1>
+      <PageHeader title="设置" hint="模型、外发规则、预警天数、备份和自定义字段" />
       <FollowStatuses />
       <SampleDays />
       <ModelsCard />
@@ -187,7 +188,7 @@ function FollowStatuses() {
       <p className="mt-0 text-muted">记跟进时可选的状态；删除选项不会影响已经用了它的合作。</p>
       <div className="flex flex-wrap gap-2">
         {statuses.map((s) => (
-          <span key={s.id} className="inline-flex items-center gap-1 rounded-md bg-bg px-2.5 py-1">
+          <span key={s.id} className="inline-flex items-center gap-1 rounded-full bg-bg px-3 py-1">
             {s.value}
             <button
               type="button"

@@ -207,7 +207,7 @@ export function AiSidebar({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      <div className="mx-4 flex rounded-lg bg-bg p-0.5" role="tablist" aria-label="模式">
+      <div className="mx-4 flex rounded-2xl bg-bg p-1" role="tablist" aria-label="模式">
         {(
           [
             ['extract', '录入'],
@@ -221,7 +221,7 @@ export function AiSidebar({ onClose }: { onClose: () => void }) {
             type="button"
             onClick={() => setMode(k)}
             className={cx(
-              'min-h-8 flex-1 cursor-pointer rounded-md border-0 text-sm',
+              'min-h-8 flex-1 cursor-pointer rounded-xl border-0 text-sm',
               mode === k
                 ? 'bg-surface font-medium text-brand shadow-sm'
                 : 'bg-transparent text-muted',
@@ -238,7 +238,7 @@ export function AiSidebar({ onClose }: { onClose: () => void }) {
       </p>
 
       {!configured && (
-        <div className="mx-4 mt-3 rounded-lg bg-brand-soft px-3 py-2.5 text-[13px]">
+        <div className="mx-4 mt-3 rounded-2xl bg-brand-soft px-4 py-3 text-[13px]">
           还没有配置 AI 模型。到{' '}
           <Link to="/settings" className="text-brand">
             设置 → AI 模型
@@ -431,7 +431,7 @@ function MessageView({
     return (
       <div className="mb-3 flex flex-col items-end">
         {m.note && <span className="mb-0.5 text-xs text-muted">{m.note}</span>}
-        <div className="max-w-[90%] whitespace-pre-wrap rounded-xl rounded-br-sm bg-brand-soft px-3 py-2 text-sm">
+        <div className="max-w-[90%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-brand px-3.5 py-2.5 text-sm text-white">
           {m.text}
         </div>
       </div>
@@ -452,7 +452,7 @@ function MessageView({
         <CardView key={c.id} card={c} onChoose={onChoose} />
       ))}
       {m.error && (
-        <div role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-[13px] text-red-700">
+        <div role="alert" className="rounded-2xl bg-warn-soft px-4 py-2.5 text-[13px] text-warn">
           {m.error}
         </div>
       )}
@@ -474,14 +474,14 @@ function CardView({
   return <AppliedCard card={card} />;
 }
 
-const box = 'rounded-lg border border-line bg-bg px-3 py-2.5 text-[13px]';
+const box = 'rounded-2xl bg-bg px-4 py-3 text-[13px]';
 
 function Warnings({ items }: { items?: string[] }) {
   if (!items?.length) return null;
   return (
     <ul
       role="alert"
-      className="m-0 mt-1.5 list-none rounded-md bg-amber-50 px-2 py-1.5 pl-2 text-amber-800"
+      className="m-0 mt-1.5 list-none rounded-xl bg-amber-soft px-3 py-1.5 text-[#8a4b00]"
     >
       {items.map((w) => (
         <li key={w}>⚠ {w}</li>
@@ -570,7 +570,7 @@ function ChooseCard({
               onChoose(c);
             }}
             className={cx(
-              'cursor-pointer rounded-md border bg-surface px-2.5 py-1.5 text-left disabled:cursor-default',
+              'cursor-pointer rounded-xl border bg-surface px-3 py-2 text-left disabled:cursor-default',
               picked === c.id ? 'border-brand text-brand' : 'border-line-strong',
               !!picked && picked !== c.id && 'opacity-50',
             )}
@@ -665,7 +665,7 @@ function PendingCardView({ card }: { card: AiCard }) {
               <input
                 aria-label={fieldLabel(d.field)}
                 type={/Date$/.test(d.field) ? 'date' : 'text'}
-                className="min-h-8 w-full rounded-md border border-line-strong bg-surface px-2"
+                className="min-h-8 w-full rounded-xl border border-line-strong bg-surface px-2"
                 value={editing[d.field] ?? ''}
                 onChange={(e) => setEditing({ ...editing, [d.field]: e.target.value })}
               />

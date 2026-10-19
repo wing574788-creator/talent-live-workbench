@@ -117,7 +117,7 @@ export function CooperationDrawer({ id, onClose }: { id: string; onClose: () => 
 
           {d.stats.stalled && c.stage === '洽谈中' && (
             <div
-              className="flex flex-wrap items-center gap-2 rounded-lg border border-warn bg-orange-50 px-3 py-2 text-warn"
+              className="flex flex-wrap items-center gap-2 rounded-2xl bg-amber-soft px-4 py-2.5 text-[#8a4b00]"
               role="alert"
             >
               连续 {d.stats.stallCount} 次跟进状态都是「待回复」，要转为暂缓或流失吗？

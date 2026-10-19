@@ -91,7 +91,7 @@ export function ChangeLogPanel() {
         {rows.map((l) => (
           <li
             key={l.id}
-            className={`rounded-lg border border-line px-3 py-2 ${l.revertedAt ? 'opacity-60' : ''}`}
+            className={`rounded-2xl bg-bg px-4 py-3 ${l.revertedAt ? 'opacity-60' : ''}`}
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span>

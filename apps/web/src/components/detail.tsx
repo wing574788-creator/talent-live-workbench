@@ -63,7 +63,7 @@ export function HistoryList({ logs }: { logs: Log[] }) {
   return (
     <ul className="m-0 flex list-none flex-col gap-2 p-0">
       {logs.map((l) => (
-        <li key={l.id} className="rounded-lg border border-line bg-surface px-3 py-2">
+        <li key={l.id} className="rounded-2xl bg-bg px-4 py-3">
           <div className="flex items-center justify-between gap-2">
             <span>
               <b>{l.undoOf ? '撤销' : (ACTION[l.action] ?? l.action)}</b>{' '}

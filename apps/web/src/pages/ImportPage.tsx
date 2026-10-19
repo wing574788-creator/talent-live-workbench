@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { PageHeader } from '../components/ui.tsx';
 import { useMemo, useState } from 'react';
 import { Batches } from '../components/import/Batches.tsx';
 import { CommitStep } from '../components/import/CommitStep.tsx';
@@ -22,13 +23,10 @@ export function ImportPage() {
   const [tab, setTab] = useState('导入向导');
   return (
     <div className="flex flex-col gap-5">
-      <div>
-        <h1 className="m-0 text-2xl font-bold">导入</h1>
-        <p className="mt-1.5 text-muted">
-          导入没有固定模板：自己的 Excel / CSV
-          怎么排的都行，把列对到系统字段上，对应关系可以存成模板下次自动套用。
-        </p>
-      </div>
+      <PageHeader
+        title="导入"
+        hint="没有固定模板：Excel / CSV 怎么排的都行，把列对到字段上，对应关系可以存成模板下次自动套用"
+      />
       <Tabs tabs={TABS} value={tab} onChange={setTab} />
       {tab === '导入向导' && <Wizard onGoBatches={() => setTab('导入批次')} />}
       {tab === '导入批次' && <Batches />}
@@ -94,13 +92,21 @@ function Wizard({ onGoBatches }: { onGoBatches: () => void }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <ol className="m-0 flex list-none flex-wrap gap-2 p-0" aria-label="导入步骤">
+      <ol
+        className="m-0 flex list-none flex-wrap gap-2 rounded-3xl bg-surface p-2 shadow-[0_1px_0_var(--color-line)]"
+        aria-label="导入步骤"
+      >
         {STEPS.map((s, i) => (
           <li
             key={s}
-            className={`rounded-full px-3 py-1 text-[13px] ${i === step ? 'bg-brand text-white' : i < step ? 'bg-brand-soft text-brand' : 'bg-surface text-muted'}`}
+            className={`flex items-center gap-2 rounded-2xl px-4 py-2 text-[13px] ${i === step ? 'bg-ink font-bold text-white' : i < step ? 'bg-brand-soft font-bold text-brand-dark' : 'text-muted'}`}
           >
-            {i + 1}. {s}
+            <span
+              className={`flex size-5 items-center justify-center rounded-full text-[11px] font-extrabold ${i === step ? 'bg-lime text-ink' : i < step ? 'bg-brand text-white' : 'bg-bg'}`}
+            >
+              {i < step ? '✓' : i + 1}
+            </span>
+            {s}
           </li>
         ))}
       </ol>

@@ -185,7 +185,7 @@ export function FollowTimeline({ items }: { items: Row[] }) {
   return (
     <ul className="m-0 flex list-none flex-col gap-2 p-0">
       {items.map((f) => (
-        <li key={f.id} className="rounded-lg border border-line bg-surface px-3 py-2">
+        <li key={f.id} className="rounded-2xl bg-bg px-4 py-3">
           <div className="flex flex-wrap items-center gap-2 text-[13px] text-muted">
             <span>{fmtDateTime(f.occurredAt)}</span>
             <Badge>{f.method}</Badge>

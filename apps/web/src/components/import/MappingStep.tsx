@@ -113,7 +113,10 @@ export function MappingStep({
             }));
 
           return (
-            <section key={s.name} className="rounded-xl border border-line bg-surface p-4">
+            <section
+              key={s.name}
+              className="rounded-3xl bg-surface p-5 shadow-[0_1px_0_var(--color-line)]"
+            >
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <h3 className="m-0 text-base">
                   {s.name}{' '}
@@ -125,7 +128,7 @@ export function MappingStep({
               </div>
               {missing.length > 0 && (
                 <p
-                  className="mb-3 mt-0 rounded-lg border border-warn bg-orange-50 px-3 py-2 text-warn"
+                  className="mb-3 mt-0 rounded-2xl bg-amber-soft px-4 py-2.5 text-[#8a4b00]"
                   role="alert"
                 >
                   必填字段还没有对应的列：{missing.map((f) => f.label).join('、')}

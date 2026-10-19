@@ -71,7 +71,7 @@ export function SamplesPanel({ influencerId }: { influencerId: string }) {
           ['逾期', sum.overdueQty, sum.overdueQty ? 'text-warn' : ''],
           ['质检问题', sum.recycleIssueCount, sum.recycleIssueCount ? 'text-warn' : ''],
         ].map(([label, n, cls]) => (
-          <div key={String(label)} className="rounded-lg border border-line bg-surface px-3 py-2">
+          <div key={String(label)} className="rounded-2xl bg-bg px-4 py-3">
             <div className="text-[13px] text-muted">{label}</div>
             <div className={`text-xl font-bold ${cls}`}>{n}</div>
           </div>
@@ -203,7 +203,7 @@ export function SamplesPanel({ influencerId }: { influencerId: string }) {
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-xl border border-line bg-surface px-4 py-3">
+    <section className="rounded-3xl bg-surface px-5 py-4 shadow-[0_1px_0_var(--color-line)]">
       <h3 className="mb-2 mt-0 text-[15px] font-bold">{title}</h3>
       {children}
     </section>
@@ -283,7 +283,7 @@ function ReturnItem({ i }: { i: Row }) {
   const photos: string[] = i.photoAttachmentIds ?? [];
   const issue = i.qaResult && i.qaResult !== '完好';
   return (
-    <div className="mt-1 flex flex-wrap items-center gap-2 rounded-lg bg-bg px-2 py-1.5">
+    <div className="mt-1 flex flex-wrap items-center gap-2 rounded-xl bg-bg px-2 py-1.5">
       <span>
         {lineText(i)} ×{i.qty}
       </span>
@@ -440,7 +440,7 @@ function NewShipmentDialog({
           </Select>
         </Field>
         {lines.map((l, i) => (
-          <div key={i} className="flex items-center justify-between rounded-lg bg-bg px-3 py-1.5">
+          <div key={i} className="flex items-center justify-between rounded-xl bg-bg px-3 py-1.5">
             <span>
               {lineText(l)} ×{l.qty}
             </span>
@@ -462,7 +462,7 @@ function NewShipmentDialog({
               <button
                 key={p.id}
                 type="button"
-                className="cursor-pointer rounded-lg border border-line bg-surface px-3 py-2 text-left hover:bg-bg"
+                className="cursor-pointer rounded-2xl bg-bg px-4 py-3 text-left hover:bg-bg"
                 onClick={() => setProd(p)}
               >
                 {p.styleNo} {p.name}
@@ -598,7 +598,7 @@ function ShipDialog({
         <Field label="快递单号">
           <TextInput value={f.trackingNo} onChange={(e) => set('trackingNo', e.target.value)} />
         </Field>
-        <div className="col-span-2 rounded-lg bg-bg px-3 py-2">
+        <div className="col-span-2 rounded-xl bg-bg px-3 py-2">
           <div className="text-[13px] text-muted">收货地址（留空则使用默认地址）</div>
           <div>
             {def

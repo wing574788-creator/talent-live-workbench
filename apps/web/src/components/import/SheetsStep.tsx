@@ -54,7 +54,7 @@ export function UploadStep({ onUploaded }: { onUploaded: (r: UploadResult) => vo
           const f = e.dataTransfer.files[0];
           if (f) void send(f);
         }}
-        className={`flex flex-col items-center gap-3 rounded-xl border-2 border-dashed px-6 py-12 text-center ${over ? 'border-brand bg-brand-soft' : 'border-line-strong bg-surface'}`}
+        className={`flex flex-col items-center gap-3 rounded-3xl border-2 border-dashed px-6 py-12 text-center ${over ? 'border-brand bg-brand-soft' : 'border-line-strong bg-surface'}`}
       >
         <div className="text-base font-medium">把 Excel 或 CSV 文件拖到这里</div>
         <div className="text-muted">
@@ -133,7 +133,7 @@ export function SheetsStep({
       {sheets.map((s) => (
         <section
           key={s.name}
-          className={`rounded-xl border bg-surface p-4 ${s.include ? 'border-brand' : 'border-line'}`}
+          className={`rounded-3xl border-2 bg-surface p-5 ${s.include ? 'border-brand' : 'border-line'}`}
         >
           <div className="flex flex-wrap items-center gap-3">
             <label className="flex cursor-pointer items-center gap-2 text-base font-bold">
@@ -251,7 +251,7 @@ function HeaderNumber({
 function PreviewTable({ s }: { s: SheetState }) {
   const width = Math.max(...s.preview.map((r) => r.length), 0);
   return (
-    <div className="mt-3 overflow-x-auto rounded-lg border border-line">
+    <div className="mt-3 overflow-x-auto rounded-2xl border border-line">
       <table className="w-full border-collapse text-left text-[13px]">
         <tbody>
           {s.preview.map((row, i) => {

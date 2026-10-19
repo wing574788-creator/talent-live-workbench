@@ -147,10 +147,7 @@ export function CommitStep({
           </div>
         ))}
         {blockers.length > 0 && (
-          <div
-            className="mt-3 rounded-lg border border-warn bg-orange-50 px-3 py-2 text-warn"
-            role="alert"
-          >
+          <div className="mt-3 rounded-2xl bg-amber-soft px-4 py-2.5 text-[#8a4b00]" role="alert">
             <b>还不能提交：</b>
             {blockers.map((b) => (
               <div key={b}>{b}</div>

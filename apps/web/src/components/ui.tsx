@@ -121,15 +121,17 @@ export function Tabs({
   onChange: (t: string) => void;
 }) {
   return (
-    <div className="flex gap-1 overflow-x-auto border-b border-line">
+    <div className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl bg-surface p-1 shadow-[0_1px_0_var(--color-line)]">
       {tabs.map((t) => (
         <button
           key={t}
           type="button"
           onClick={() => onChange(t)}
           className={cx(
-            'min-h-10 cursor-pointer whitespace-nowrap border-b-2 bg-transparent px-3 text-sm',
-            t === value ? 'border-brand font-medium text-brand' : 'border-transparent text-muted',
+            'min-h-9 cursor-pointer whitespace-nowrap rounded-xl border-0 px-4 text-sm transition-colors',
+            t === value
+              ? 'bg-ink font-bold text-white'
+              : 'bg-transparent font-medium text-ink-2 hover:bg-bg',
           )}
         >
           {t}
@@ -161,21 +163,24 @@ export function Drawer({
     return () => window.removeEventListener('keydown', h);
   }, [onClose]);
   return (
-    <div className="fixed inset-0 z-40 flex justify-end bg-black/30" onMouseDown={onClose}>
+    <div
+      className="fixed inset-0 z-40 flex justify-end bg-ink/35 backdrop-blur-[2px]"
+      onMouseDown={onClose}
+    >
       <aside
-        className="flex h-full max-w-full flex-col bg-bg shadow-xl"
+        className="flex h-full max-w-full flex-col rounded-l-[32px] bg-bg shadow-2xl"
         style={{ width }}
         onMouseDown={(e) => e.stopPropagation()}
         role="dialog"
         aria-label="详情"
       >
-        <header className="flex items-center justify-between gap-3 border-b border-line bg-surface px-5 py-3">
-          <h2 className="m-0 text-lg font-bold">{title}</h2>
+        <header className="flex items-center justify-between gap-3 px-6 pb-2 pt-5">
+          <h2 className="m-0 text-2xl font-extrabold tracking-tight">{title}</h2>
           <Button variant="ghost" onClick={onClose}>
             关闭
           </Button>
         </header>
-        <div className="flex-1 overflow-y-auto px-5 py-4">{children}</div>
+        <div className="flex-1 overflow-y-auto px-6 pb-6 pt-3">{children}</div>
       </aside>
     </div>
   );
@@ -207,7 +212,7 @@ export function Modal({
         aria-label={title}
       >
         <header className="border-b border-line px-5 py-3 text-base font-bold">{title}</header>
-        <div className="flex-1 overflow-y-auto px-5 py-4">{children}</div>
+        <div className="flex-1 overflow-y-auto px-6 pb-6 pt-3">{children}</div>
         {footer && (
           <footer className="flex justify-end gap-2 border-t border-line px-5 py-3">
             {footer}

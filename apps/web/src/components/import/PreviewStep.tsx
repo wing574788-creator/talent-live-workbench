@@ -148,7 +148,7 @@ function SheetPreview({
   const hasMerge = ds.stats.update + ds.stats.duplicate > 0;
 
   return (
-    <section className="rounded-xl border border-line bg-surface p-4">
+    <section className="rounded-3xl bg-surface p-5 shadow-[0_1px_0_var(--color-line)]">
       <h3 className="m-0 text-base">
         {ds.sheet} <span className="font-normal text-muted">→ {label}</span>
       </h3>
@@ -183,10 +183,7 @@ function SheetPreview({
       </div>
 
       {ds.configIssues.length > 0 && (
-        <div
-          className="mt-3 rounded-lg border border-warn bg-orange-50 px-3 py-2 text-warn"
-          role="alert"
-        >
+        <div className="mt-3 rounded-2xl bg-amber-soft px-4 py-2.5 text-[#8a4b00]" role="alert">
           {ds.configIssues.map((t) => (
             <div key={t}>{t}</div>
           ))}
@@ -309,7 +306,7 @@ function SheetPreview({
       )}
 
       {ds.stats.duplicate > 0 && (
-        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg bg-bg px-3 py-2">
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-2xl bg-bg px-4 py-2.5">
           <b>疑似重复 {ds.stats.duplicate} 条</b>
           {ds.undecided > 0 ? (
             <Badge tone="red">{ds.undecided} 条还没裁决</Badge>
@@ -327,7 +324,7 @@ function SheetPreview({
         </div>
       )}
 
-      <div className="mt-3 overflow-x-auto rounded-lg border border-line">
+      <div className="mt-3 overflow-x-auto rounded-2xl border border-line">
         <table className="w-full min-w-[760px] border-collapse text-left text-[13px]">
           <thead>
             <tr className="bg-bg text-muted">
@@ -344,7 +341,7 @@ function SheetPreview({
                 <td className="px-2 py-2 text-muted">{r.rowNo}</td>
                 <td className="px-2 py-2">
                   <span
-                    className={`whitespace-nowrap rounded-md px-2 py-0.5 text-xs ${STATUS[r.status].cls}`}
+                    className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-bold ${STATUS[r.status].cls}`}
                   >
                     {STATUS[r.status].label}
                   </span>

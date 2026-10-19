@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { PageHeader } from '../components/ui.tsx';
 import { DiffTable, type FieldDiff } from '../components/Diff.tsx';
 import { useAction } from '../components/detail.tsx';
 import { Badge, Button, Card, Empty, useToast } from '../components/ui.tsx';
@@ -42,13 +43,10 @@ export function ReviewPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div>
-        <h1 className="m-0 text-2xl font-bold">审核</h1>
-        <p className="mt-1.5 text-muted">
-          删除、合并达人、批量修改、改金额或佣金、修改已完成的合作，来自 AI
-          或导入时先在这里等你确认；待审核的改动不会过期。
-        </p>
-      </div>
+      <PageHeader
+        title="审核"
+        hint="删除、合并达人、批量修改、改金额或佣金、修改已完成的合作：来自 AI 或导入时先在这里等你确认，待审核的改动不会过期"
+      />
       {q.isPending && <Empty>加载中…</Empty>}
       {q.data && rows.length === 0 && <Empty>没有待审核的改动</Empty>}
       {[...batches].map(([batchId, items]) => (
@@ -67,7 +65,7 @@ function BatchGroup({ batchId, items }: { batchId: string; items: Pending[] }) {
   const first = items[0]!;
   const stale = items.filter((i) => i.stale).length;
   return (
-    <section className="rounded-xl border border-line-strong bg-bg p-3">
+    <section className="rounded-[28px] bg-[#e9e7f7] p-3">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2 px-1">
         <div>
           <b>同一批 {items.length} 条改动</b>{' '}

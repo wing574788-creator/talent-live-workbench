@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PageHeader } from '../components/ui.tsx';
 import { useRegisterSelection } from '../lib/selection.ts';
 import { PRODUCT_STATUSES, PLATFORMS } from '@workbench/shared';
 import { EntityList, type Col } from '../components/EntityList.tsx';
@@ -42,8 +43,22 @@ const SPECS: FieldSpec[] = [
 ];
 
 const COLS: Col<Row>[] = [
-  { id: 'styleNo', header: '款号', sort: 'styleNo', cell: (r) => <b>{r.styleNo}</b> },
-  { id: 'name', header: '名称', sort: 'name', cell: (r) => r.name },
+  {
+    id: 'styleNo',
+    header: '款号',
+    sort: 'styleNo',
+    cell: (r) => (
+      <span className="rounded-lg bg-ink px-2.5 py-1 text-xs font-extrabold tracking-wide text-lime">
+        {r.styleNo}
+      </span>
+    ),
+  },
+  {
+    id: 'name',
+    header: '名称',
+    sort: 'name',
+    cell: (r) => <b className="text-[15px]">{r.name}</b>,
+  },
   {
     id: 'status',
     header: '状态',
@@ -54,9 +69,13 @@ const COLS: Col<Row>[] = [
     id: 'livePrice',
     header: '直播价',
     sort: 'livePriceCents',
-    cell: (r) => fmtMoney(r.livePriceCents),
+    cell: (r) => <b>{fmtMoney(r.livePriceCents)}</b>,
   },
-  { id: 'finalPrice', header: '到手价', cell: (r) => fmtMoney(r.finalPriceCents) },
+  {
+    id: 'finalPrice',
+    header: '到手价',
+    cell: (r) => <span className="text-muted">{fmtMoney(r.finalPriceCents)}</span>,
+  },
   { id: 'mechanism', header: '机制赠品', defaultHidden: true, cell: (r) => r.mechanism ?? '' },
   {
     id: 'updatedAt',
@@ -72,7 +91,10 @@ export function ProductsPage() {
   const [creating, setCreating] = useState(false);
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="m-0 text-2xl font-bold">商品</h1>
+      <PageHeader
+        title="商品"
+        hint="款号、价格、尺码表和平台链接；佣金设在每场合作里，不在商品上"
+      />
       <EntityList
         entity="product"
         endpoint="/products"
@@ -290,7 +312,10 @@ function Variants({ productId, variants }: { productId: string; variants: Row[] 
         >
           <b className="w-20">{c}</b>
           {items.map((v) => (
-            <span key={v.id} className="inline-flex items-center gap-1 rounded-md bg-bg px-2 py-1">
+            <span
+              key={v.id}
+              className="inline-flex items-center gap-1 rounded-full bg-bg px-2.5 py-1"
+            >
               {v.size}
               <button
                 type="button"
@@ -493,7 +518,7 @@ function Images({ productId, images }: { productId: string; images: Row[] }) {
     <Section
       title="产品图片（第一张为主图）"
       actions={
-        <label className="inline-flex min-h-9 cursor-pointer items-center rounded-lg bg-brand px-3.5 text-sm text-white hover:bg-brand-dark">
+        <label className="inline-flex min-h-9 cursor-pointer items-center rounded-xl bg-brand px-4 text-sm font-bold text-white hover:bg-brand-dark">
           上传图片
           <input
             type="file"
@@ -514,7 +539,7 @@ function Images({ productId, images }: { productId: string; images: Row[] }) {
         {images.map((img, i) => (
           <figure
             key={img.id}
-            className="m-0 overflow-hidden rounded-lg border border-line bg-surface"
+            className="m-0 overflow-hidden rounded-2xl border border-line bg-surface"
           >
             <img
               src={`/api/attachments/${img.attachmentId}/file`}
