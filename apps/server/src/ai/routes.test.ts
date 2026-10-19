@@ -33,7 +33,7 @@ const call = async (method: string, url: string, body?: unknown) => {
   return { status: res.status, text, json: text.startsWith('{') ? JSON.parse(text) : null };
 };
 
-const KEY = 'sk-test-0123456789abcdef';
+const KEY = 'test-key-0123456789abcdef';
 
 describe('模型配置', () => {
   it('默认没有配置；添加提供方、填 Key、指定用途后可用', async () => {

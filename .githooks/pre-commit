@@ -1,0 +1,3 @@
+#!/bin/sh
+# 提交前扫描暂存区里有没有疑似密钥；启用方式：pnpm hooks（只需一次）
+node scripts/scan-secrets.mjs || exit 1

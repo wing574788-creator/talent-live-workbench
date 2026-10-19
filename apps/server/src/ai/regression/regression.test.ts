@@ -30,7 +30,7 @@ beforeAll(async () => {
     baseUrl: mock.url,
     models: ['mock-1'],
   });
-  ctx.store.setKey('mock', 'sk-mock-0123456789');
+  ctx.store.setKey('mock', 'mock-key-0123456789');
   ctx.store.setPurpose('extract', { provider: 'mock', model: 'mock-1' });
   ctx.store.setPurpose('chat', { provider: 'mock', model: 'mock-1' });
 });

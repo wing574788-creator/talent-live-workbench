@@ -3,6 +3,7 @@
  * API Key 单独存在 secrets.json（CLAUDE.md 铁律 8）：不进数据库、不写日志、永远不返回前端——
  * 前端只能知道"某个提供方有没有配置 Key"。
  */
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
@@ -68,6 +69,28 @@ export const emptyConfig = (): AiConfig => ({
 
 /** 内置提供方的 Pi 提供方 ID（就是种类名） */
 export const BUILTIN_KINDS: ProviderKind[] = ['deepseek', 'anthropic', 'openai'];
+
+/**
+ * 密钥文件只允许当前用户读写。Linux/macOS 用 chmod 600；Windows 上 chmod 无效，
+ * 改用 icacls 去掉继承的权限，只留当前用户。失败不影响使用（尽力而为）。
+ */
+function restrictToCurrentUser(file: string) {
+  try {
+    if (process.platform === 'win32') {
+      const user = process.env.USERNAME;
+      if (user) {
+        execFileSync('icacls', [file, '/inheritance:r', '/grant:r', `${user}:F`], {
+          stdio: 'ignore',
+          windowsHide: true,
+        });
+      }
+    } else {
+      fs.chmodSync(file, 0o600);
+    }
+  } catch {
+    /* 尽力而为 */
+  }
+}
 
 export class AiConfigStore {
   private readonly cfgFile: string;
@@ -141,11 +164,7 @@ export class AiConfigStore {
   private writeSecrets(s: Record<string, string>) {
     fs.mkdirSync(this.dataDir, { recursive: true });
     fs.writeFileSync(this.secretFile, JSON.stringify(s), { mode: 0o600 });
-    try {
-      fs.chmodSync(this.secretFile, 0o600);
-    } catch {
-      /* Windows 上忽略 */
-    }
+    restrictToCurrentUser(this.secretFile);
   }
 
   setKey(providerId: string, key: string) {

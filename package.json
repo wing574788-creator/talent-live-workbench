@@ -19,7 +19,9 @@
     "db:seed": "pnpm --filter @workbench/server db:seed",
     "backup": "pnpm --filter @workbench/server backup:cli",
     "agent:spike": "pnpm --filter @workbench/server agent:spike",
-    "samples:import": "pnpm --filter @workbench/server samples:import"
+    "samples:import": "pnpm --filter @workbench/server samples:import",
+    "scan:secrets": "node scripts/scan-secrets.mjs --all",
+    "hooks": "git config core.hooksPath .githooks"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

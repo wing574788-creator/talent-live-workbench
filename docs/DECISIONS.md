@@ -130,3 +130,12 @@
 - **工具调用回归集**：`ai/regression/`（14 个用例 + 固定虚构数据）。`pnpm --filter @workbench/server ai:regress [用例id]` 对当前配置的真实模型跑一遍（临时数据库，配置复制自数据目录，跑完删除）；`regression.test.ts` 用本地假接口回放"理想脚本"和"坏模型"，证明用例自洽且能发现问题。
 - **确认合作即确认其达人**：用户选中或确认了某个合作后，该合作的达人也算已确认（否则"选中合作后建寄样草稿"会被目标确认拦住）。
 - **未验证**：真实 DeepSeek 调用（需用户在设置页填自己的 Key）；`suggest_import_mapping` 只以导入向导里的"AI 建议映射"按钮提供，没有放进聊天工具。
+
+## 2026-10-19 密钥与敏感信息检查
+
+- 扫描结论：代码和提交里没有真实密钥、令牌、私钥；仓库里只有测试用的假值（原来写成 `sk-` 开头，容易被扫描器当真，已改成 `mock-key-…`）和虚构手机号（13800001111 这类）。
+- 运行时密钥只在数据目录的 `secrets.json`：不进数据库、不进日志、不返回前端；测试会扫描整个数据目录，确认除 `secrets.json` 外任何文件（数据库、会话、模型配置、备份）都没有 Key。
+- Windows 上 `chmod` 无效，改用 `icacls` 去掉继承权限，只留当前用户（已验证）。
+- 新增 `scripts/scan-secrets.mjs`：`pnpm scan:secrets` 扫整个工作区；`pnpm hooks` 启用 `.githooks/pre-commit`，提交前扫描暂存区；`secret-scan.test.ts` 让测试也扫一遍。
+- `.gitignore` 补充 `secrets.json`、`ai-config.json`、`backup-config.json`、`*.before-restore`、`auth.json`、`*.pem`、`*.key`、`.env.*`。
+- 已知局限：真实姓名只有在库里已有或带"收件人："等标签时才会被外发脱敏，自由文本里孤立出现的人名无法识别。

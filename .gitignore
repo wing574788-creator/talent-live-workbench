@@ -11,3 +11,12 @@ dist
 .mock.log
 bat.out
 bat.err
+secrets.json
+ai-config.json
+backup-config.json
+*.before-restore
+restore-pending.db
+auth.json
+*.pem
+*.key
+.env.*

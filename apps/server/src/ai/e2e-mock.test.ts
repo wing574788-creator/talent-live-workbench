@@ -52,7 +52,7 @@ beforeEach(() => {
     baseUrl: mock.url,
     models: ['mock-1'],
   });
-  ctx.store.setKey('mock', 'sk-mock-0123456789');
+  ctx.store.setKey('mock', 'mock-key-0123456789');
   ctx.store.setPurpose('extract', { provider: 'mock', model: 'mock-1' });
   ctx.store.setPurpose('chat', { provider: 'mock', model: 'mock-1' });
 });
@@ -136,22 +136,23 @@ describe('真实提供方通道（本地假接口）', () => {
   it('API Key 通过请求头发出，但不会出现在请求体、外发日志和会话里', async () => {
     mock.setScript([{ text: '你好' }]);
     await send('你好');
-    expect(JSON.stringify(mock.requests)).not.toContain('sk-mock-0123456789');
+    expect(JSON.stringify(mock.requests)).not.toContain('mock-key-0123456789');
     expect(
       d
         .entity('outbound_log')
         .list()
         .map((l) => l.payload)
         .join(''),
-    ).not.toContain('sk-mock-0123456789');
+    ).not.toContain('mock-key-0123456789');
     const files = fs
       .readdirSync(dir, { recursive: true })
       .map(String)
-      .filter((f) => /ai-sessions|pi[\\/]models\.json/.test(f));
+      // 数据目录里除了 secrets.json，哪里都不该有 Key（数据库、会话、模型配置、备份……）
+      .filter((f) => path.basename(f) !== 'secrets.json');
     for (const f of files) {
       const p = path.join(dir, f);
       if (fs.statSync(p).isFile())
-        expect(fs.readFileSync(p, 'utf8')).not.toContain('sk-mock-0123456789');
+        expect(fs.readFileSync(p, 'utf8')).not.toContain('mock-key-0123456789');
     }
   });
 
