@@ -340,11 +340,14 @@ function ReturnItem({ i }: { i: Row }) {
 }
 
 // ───────────── 对话框 ─────────────
-function NewShipmentDialog({
+export function NewShipmentDialog({
   influencerId,
+  defaultCoopId = '',
   onClose,
 }: {
   influencerId: string;
+  /** 从合作详情进来时预先关联这场合作 */
+  defaultCoopId?: string;
   onClose: () => void;
 }) {
   const run = useAction();
@@ -352,7 +355,7 @@ function NewShipmentDialog({
     queryKey: ['influencer', influencerId],
     queryFn: () => api<Row>('GET', `/influencers/${influencerId}`),
   });
-  const [coopId, setCoopId] = useState('');
+  const [coopId, setCoopId] = useState(defaultCoopId);
   const [pq, setPq] = useState('');
   const [prod, setProd] = useState<Row | null>(null);
   const [color, setColor] = useState('');

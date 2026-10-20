@@ -197,28 +197,35 @@ export function FollowTimeline({ items }: { items: Row[] }) {
   return (
     <ul className="m-0 flex list-none flex-col gap-2 p-0">
       {items.map((f) => (
-        <li key={f.id} className="rounded-2xl bg-bg px-4 py-3">
-          <div className="flex flex-wrap items-center gap-2 text-[13px] text-muted">
-            <span>{fmtDateTime(f.occurredAt)}</span>
-            <Badge>{f.method}</Badge>
-            {f.intent && <Badge tone={f.intent === '高' ? 'green' : 'gray'}>意向{f.intent}</Badge>}
-            {f.followStatus && <Badge tone="green">{f.followStatus}</Badge>}
-          </div>
-          <div className="mt-1 whitespace-pre-wrap">{f.summary}</div>
-          {(f.nextAction || f.nextFollowDate) && (
-            <div className="mt-1 text-[13px] text-muted">
-              下一步：{f.nextAction ?? ''} {f.nextFollowDate ? `· ${f.nextFollowDate}` : ''}
-            </div>
-          )}
-          {f.sourceText && (
-            <details className="mt-1 text-[13px] text-muted">
-              <summary className="cursor-pointer">原文出处</summary>
-              <div className="whitespace-pre-wrap">{f.sourceText}</div>
-            </details>
-          )}
-        </li>
+        <FollowItem key={f.id} f={f} />
       ))}
     </ul>
+  );
+}
+
+/** 时间线里的一条跟进记录 */
+export function FollowItem({ f }: { f: Row }) {
+  return (
+    <li className="rounded-2xl bg-bg px-4 py-3">
+      <div className="flex flex-wrap items-center gap-2 text-[13px] text-muted">
+        <span>{fmtDateTime(f.occurredAt)}</span>
+        <Badge>{f.method}</Badge>
+        {f.intent && <Badge tone={f.intent === '高' ? 'green' : 'gray'}>意向{f.intent}</Badge>}
+        {f.followStatus && <Badge tone="green">{f.followStatus}</Badge>}
+      </div>
+      <div className="mt-1 whitespace-pre-wrap">{f.summary}</div>
+      {(f.nextAction || f.nextFollowDate) && (
+        <div className="mt-1 text-[13px] text-muted">
+          下一步：{f.nextAction ?? ''} {f.nextFollowDate ? `· ${f.nextFollowDate}` : ''}
+        </div>
+      )}
+      {f.sourceText && (
+        <details className="mt-1 text-[13px] text-muted">
+          <summary className="cursor-pointer">原文出处</summary>
+          <div className="whitespace-pre-wrap">{f.sourceText}</div>
+        </details>
+      )}
+    </li>
   );
 }
 

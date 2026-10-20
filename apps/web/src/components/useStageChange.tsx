@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CommissionDialog } from './CommissionTable.tsx';
 import { FollowDateInput, useDefaultFollowDate, useSettings } from './FollowUp.tsx';
 import { patchEntity, useAction } from './detail.tsx';
 import { todayStr } from '../lib/format.ts';
@@ -16,8 +17,18 @@ export function useStageChange() {
   const [reason, setReason] = useState('');
   const [status, setStatus] = useState('');
 
-  const commit = (coop: Row, patch: Record<string, unknown>) =>
-    run(() => patchEntity('cooperation', coop.id, patch, coop.version), `已改为「${patch.stage}」`);
+  // 改成"已确认"后顺手把佣金定下来（可跳过）
+  const [commissionFor, setCommissionFor] = useState<string | null>(null);
+
+  async function commit(coop: Row, patch: Record<string, unknown>) {
+    const res = await run(
+      () => patchEntity('cooperation', coop.id, patch, coop.version),
+      `已改为「${patch.stage}」`,
+    );
+    if (res && patch.stage === '已确认' && (res as { status?: string }).status !== 'pending')
+      setCommissionFor(coop.id);
+    return res;
+  }
 
   function request(coop: Row, target: string) {
     if (coop.stage === target) return;
@@ -34,7 +45,7 @@ export function useStageChange() {
     } else commit(coop, { stage: target });
   }
 
-  const dialog = pending && (
+  const stageDialog = pending && (
     <Modal
       title={`改为「${pending.target}」`}
       onClose={() => setPending(null)}
@@ -88,6 +99,14 @@ export function useStageChange() {
         </Field>
       )}
     </Modal>
+  );
+  const dialog = (
+    <>
+      {stageDialog}
+      {commissionFor && (
+        <CommissionDialog coopId={commissionFor} onClose={() => setCommissionFor(null)} />
+      )}
+    </>
   );
   return { request, dialog };
 }
