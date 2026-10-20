@@ -17,7 +17,7 @@ import {
   COOP_STAGES,
 } from '@workbench/shared';
 import { EntityList, type Col } from '../components/EntityList.tsx';
-import { useSettings } from '../components/FollowUp.tsx';
+import { FollowUpDialog, QuickFollow, useSettings } from '../components/FollowUp.tsx';
 import { useAction } from '../components/detail.tsx';
 import { Badge, Button, Field, Modal, Select, TextInput } from '../components/ui.tsx';
 import { api, qs } from '../lib/api.ts';
@@ -50,6 +50,9 @@ export function CooperationsPage() {
   );
   const [openId, setOpenId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [quick, setQuick] = useState<Row | null>(null);
+  const [fullFollow, setFullFollow] = useState<Row | null>(null);
+  const { request, dialog } = useStageChange();
   useEffect(() => localStorage.setItem('coop-view', view), [view]);
   return (
     <div className="flex flex-col gap-5">
@@ -84,7 +87,33 @@ export function CooperationsPage() {
           </Button>
         </div>
       </div>
-      {view === 'board' ? <Board onOpen={setOpenId} /> : <ListView onOpen={setOpenId} />}
+      {view === 'board' ? (
+        <Board onOpen={setOpenId} onQuick={setQuick} />
+      ) : (
+        <ListView onOpen={setOpenId} onQuick={setQuick} />
+      )}
+      {quick && (
+        <QuickFollow
+          target={{ cooperationId: quick.id }}
+          coop={quick}
+          title={quick.influencerNickname}
+          onClose={() => setQuick(null)}
+          onExpand={() => setFullFollow(quick)}
+          onPause={async () => {
+            // 记跟进会更新合作（版本号变了），先取最新的再改阶段
+            const fresh = await api<{ cooperation: Row }>('GET', `/cooperations/${quick.id}`);
+            request(fresh.cooperation, '暂缓');
+          }}
+        />
+      )}
+      {fullFollow && (
+        <FollowUpDialog
+          target={{ cooperationId: fullFollow.id }}
+          coop={fullFollow}
+          onClose={() => setFullFollow(null)}
+        />
+      )}
+      {dialog}
       {creating && (
         <NewCooperation
           onClose={() => setCreating(false)}
@@ -100,7 +129,7 @@ export function CooperationsPage() {
 }
 
 // ───────────── 看板 ─────────────
-function Board({ onOpen }: { onOpen: (id: string) => void }) {
+function Board({ onOpen, onQuick }: { onOpen: (id: string) => void; onQuick: (c: Row) => void }) {
   const [q, setQ] = useState('');
   const [dueOnly, setDueOnly] = useState(false);
   const { request, dialog } = useStageChange();
@@ -149,6 +178,7 @@ function Board({ onOpen }: { onOpen: (id: string) => void }) {
               cards={rows.filter((c) => c.stage === stage)}
               today={today}
               onOpen={onOpen}
+              onQuick={onQuick}
             />
           ))}
         </div>
@@ -174,11 +204,13 @@ function Column({
   cards,
   today,
   onOpen,
+  onQuick,
 }: {
   stage: string;
   cards: Row[];
   today: string;
   onOpen: (id: string) => void;
+  onQuick: (c: Row) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: stage });
   return (
@@ -206,7 +238,7 @@ function Column({
         </div>
       )}
       {cards.map((c) => (
-        <CardView key={c.id} c={c} today={today} onOpen={onOpen} />
+        <CardView key={c.id} c={c} today={today} onOpen={onOpen} onQuick={onQuick} />
       ))}
     </section>
   );
@@ -251,7 +283,17 @@ function SideDrop({ stage, count }: { stage: string; count: number }) {
   );
 }
 
-function CardView({ c, today, onOpen }: { c: Row; today: string; onOpen: (id: string) => void }) {
+function CardView({
+  c,
+  today,
+  onOpen,
+  onQuick,
+}: {
+  c: Row;
+  today: string;
+  onOpen: (id: string) => void;
+  onQuick: (c: Row) => void;
+}) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: c.id });
   const overdue = isDue(c, today);
   const scheduled = ['已排期', '已开播', '待退样', '待复盘', '完成'].includes(c.stage);
@@ -265,8 +307,9 @@ function CardView({ c, today, onOpen }: { c: Row; today: string; onOpen: (id: st
         transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
         zIndex: isDragging ? 30 : undefined,
       }}
-      className={`cursor-grab rounded-[20px] bg-surface p-4 text-[13px] shadow-[0_2px_0_var(--color-line-strong)] ${isDragging ? 'rotate-1 opacity-90 shadow-xl' : ''}`}
+      className={`group relative cursor-grab rounded-[20px] bg-surface p-4 text-[13px] shadow-[0_2px_0_var(--color-line-strong)] ${isDragging ? 'rotate-1 opacity-90 shadow-xl' : ''}`}
     >
+      <QuickFollowButton c={c} onQuick={onQuick} />
       <div className="flex items-center gap-2.5">
         <span
           aria-hidden="true"
@@ -305,8 +348,47 @@ function CardView({ c, today, onOpen }: { c: Row; today: string; onOpen: (id: st
   );
 }
 
+/** 卡片右上角的"记跟进"按钮：悬停或键盘聚焦时出现，不触发拖拽和打开详情 */
+function QuickFollowButton({ c, onQuick }: { c: Row; onQuick: (c: Row) => void }) {
+  return (
+    <button
+      type="button"
+      title="记跟进"
+      aria-label={`记跟进：${c.influencerNickname}`}
+      onPointerDown={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        e.stopPropagation();
+        onQuick(c);
+      }}
+      className="absolute right-3 top-3 flex size-8 cursor-pointer items-center justify-center rounded-full border-0 bg-ink text-lime opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+    >
+      <svg
+        aria-hidden="true"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M4 20h4L19 9l-4-4L4 16z" />
+        <path d="M13.5 6.5l4 4" />
+      </svg>
+    </button>
+  );
+}
+
 // ───────────── 列表 ─────────────
-function ListView({ onOpen }: { onOpen: (id: string) => void }) {
+function ListView({
+  onOpen,
+  onQuick,
+}: {
+  onOpen: (id: string) => void;
+  onQuick: (c: Row) => void;
+}) {
   const settings = useSettings();
   const { request, dialog } = useStageChange();
   const today = todayStr();
@@ -360,6 +442,21 @@ function ListView({ onOpen }: { onOpen: (id: string) => void }) {
     { id: 'commission', header: '佣金', cell: (r) => pctText(r) },
     { id: 'products', header: '商品', defaultHidden: true, cell: (r) => r.productNames.join('、') },
     { id: 'lost', header: '流失/放弃原因', defaultHidden: true, cell: (r) => r.lostReason ?? '' },
+    {
+      id: 'quick',
+      header: '',
+      cell: (r) => (
+        <Button
+          className="!min-h-8 !px-3 !text-xs"
+          onClick={(e) => {
+            e.stopPropagation();
+            onQuick(r);
+          }}
+        >
+          记跟进
+        </Button>
+      ),
+    },
     {
       id: 'updatedAt',
       header: '更新时间',

@@ -3,7 +3,8 @@ import { Link } from '@tanstack/react-router';
 import { motion } from 'motion/react';
 import { useState } from 'react';
 import { QuickEntry, SummaryCard } from '../components/ai/HomeAi.tsx';
-import { FollowUpDialog, type FollowTarget } from '../components/FollowUp.tsx';
+import { FollowUpDialog, QuickFollow, type FollowTarget } from '../components/FollowUp.tsx';
+import { useStageChange } from '../components/useStageChange.tsx';
 import { SamplesPanel } from '../components/samples.tsx';
 import { Badge, Button, CountUp, Drawer, Empty } from '../components/ui.tsx';
 import { api } from '../lib/api.ts';
@@ -79,7 +80,13 @@ export function HomePage() {
   });
   const [coopId, setCoopId] = useState<string | null>(null);
   const [inf, setInf] = useState<Row | null>(null);
-  const [follow, setFollow] = useState<{ target: FollowTarget; coop?: Row } | null>(null);
+  const [follow, setFollow] = useState<{
+    target: FollowTarget;
+    coop?: Row;
+    title: string;
+    full?: boolean;
+  } | null>(null);
+  const { request, dialog } = useStageChange();
   const d = q.data;
 
   if (q.isPending) return <Empty>加载中…</Empty>;
@@ -197,8 +204,9 @@ export function HomePage() {
                                 ? {
                                     target: { cooperationId: r.id },
                                     coop: { stage: r.stage, nextFollowDate: r.nextFollowDate },
+                                    title: r.name,
                                   }
-                                : { target: { contactId: r.id } },
+                                : { target: { contactId: r.id }, title: r.name },
                             )
                           }
                         >
@@ -284,9 +292,28 @@ export function HomePage() {
           <SamplesPanel influencerId={inf.id} />
         </Drawer>
       )}
-      {follow && (
-        <FollowUpDialog target={follow.target} coop={follow.coop} onClose={() => setFollow(null)} />
-      )}
+      {follow &&
+        (follow.full ? (
+          <FollowUpDialog
+            target={follow.target}
+            coop={follow.coop}
+            onClose={() => setFollow(null)}
+          />
+        ) : (
+          <QuickFollow
+            target={follow.target}
+            coop={follow.coop}
+            title={follow.title}
+            onClose={() => setFollow(null)}
+            onExpand={() => setFollow({ ...follow, full: true })}
+            onPause={async () => {
+              const id = follow.target.cooperationId!;
+              const fresh = await api<{ cooperation: Row }>('GET', `/cooperations/${id}`);
+              request(fresh.cooperation, '暂缓');
+            }}
+          />
+        ))}
+      {dialog}
     </div>
   );
 }

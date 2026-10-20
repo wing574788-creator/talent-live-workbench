@@ -254,7 +254,47 @@ function FollowStatuses() {
           保存
         </Button>
       </div>
+      <DefaultFollowDays />
     </Card>
+  );
+}
+
+/** 记跟进、进入洽谈中时下次跟进日期的默认值 */
+function DefaultFollowDays() {
+  const run = useAction();
+  const settings = useSettings();
+  const [n, setN] = useState('');
+  const current = settings.data?.defaultFollowDays ?? 3;
+  return (
+    <>
+      <h4 className="mb-2 mt-5">默认下次跟进</h4>
+      <div className="flex items-center gap-2">
+        记跟进时，下次跟进日期默认预填今天 +
+        <TextInput
+          className="!w-20"
+          inputMode="numeric"
+          aria-label="默认下次跟进天数"
+          placeholder={String(current)}
+          value={n}
+          onChange={(e) => setN(e.target.value)}
+        />
+        天（当前 {current} 天）
+        <Button
+          disabled={n === ''}
+          onClick={async () => {
+            if (
+              await run(
+                () => api('PUT', '/settings/defaultFollowDays', { value: Number(n) }),
+                '已保存',
+              )
+            )
+              setN('');
+          }}
+        >
+          保存
+        </Button>
+      </div>
+    </>
   );
 }
 

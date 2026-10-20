@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useSettings } from './FollowUp.tsx';
+import { FollowDateInput, useDefaultFollowDate, useSettings } from './FollowUp.tsx';
 import { patchEntity, useAction } from './detail.tsx';
 import { todayStr } from '../lib/format.ts';
-import { Button, Field, Modal, Select, TextInput, Textarea } from './ui.tsx';
+import { Button, Field, Modal, Select, Textarea } from './ui.tsx';
 
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -10,6 +10,7 @@ type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-exp
 export function useStageChange() {
   const run = useAction();
   const settings = useSettings();
+  const defaultDate = useDefaultFollowDate();
   const [pending, setPending] = useState<{ coop: Row; target: string } | null>(null);
   const [date, setDate] = useState('');
   const [reason, setReason] = useState('');
@@ -26,7 +27,7 @@ export function useStageChange() {
     const lost = (s: string) => s === '流失' || s === '放弃';
     const needReason = lost(target) && !(lost(coop.stage) && coop.lostReason);
     if (needDate || needReason) {
-      setDate('');
+      setDate(defaultDate);
       setReason('');
       setStatus('');
       setPending({ coop, target });
@@ -66,14 +67,7 @@ export function useStageChange() {
       {pending.target === '洽谈中' ? (
         <div className="flex flex-col gap-3">
           <p className="m-0 text-muted">洽谈中的合作必须有下次跟进日期。</p>
-          <Field label="下次跟进日期 *">
-            <TextInput
-              type="date"
-              min={todayStr()}
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </Field>
+          <FollowDateInput required value={date} onChange={setDate} />
           <Field label="跟进状态">
             <Select value={status} onChange={(e) => setStatus(e.target.value)}>
               <option value="">—</option>

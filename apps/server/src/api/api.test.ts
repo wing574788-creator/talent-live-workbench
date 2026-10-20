@@ -422,6 +422,10 @@ describe('合作 API', () => {
     expect((await call('PUT', '/settings/replyStallCount', { value: 1 })).status).toBe(400);
     expect((await call('PUT', '/settings/replyStallCount', { value: 4 })).status).toBe(200);
     expect((await call('GET', '/settings')).body.replyStallCount).toBe(4);
+    expect(s.body.defaultFollowDays).toBe(3);
+    expect((await call('PUT', '/settings/defaultFollowDays', { value: 0 })).status).toBe(400);
+    expect((await call('PUT', '/settings/defaultFollowDays', { value: 5 })).status).toBe(200);
+    expect((await call('GET', '/settings')).body.defaultFollowDays).toBe(5);
     await call('POST', '/e/enum_option', { group: 'follow_status', value: '谈崩了' });
     expect((await call('GET', '/settings')).body.followStatuses.map((x: any) => x.value)).toContain(
       '谈崩了',

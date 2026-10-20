@@ -258,6 +258,8 @@ export const settingSchema = obj({
 export const SETTING_DEFAULTS = {
   /** 连续 N 次跟进状态都是"待回复"时提醒转暂缓/流失（PRD 5.3） */
   replyStallCount: 3,
+  /** 记跟进、进入洽谈中时，下次跟进日期默认预填今天 + 这么多天 */
+  defaultFollowDays: 3,
   /**
    * 应寄回日期默认值（PRD 5.5 写明"N / M"但未给数值，这里先取 3 和 7，待用户确认）：
    * 有开播日 → 开播日 + N 天；未排期 → 签收日 + M 天。

@@ -330,6 +330,7 @@ export function createApi(domain: Domain, store: AttachmentStore, dataDir: strin
   /** 可在设置页修改的整数阈值：键 → [最小, 最大, 名称] */
   const INT_SETTINGS = {
     replyStallCount: [2, 20, '连续待回复次数'],
+    defaultFollowDays: [1, 60, '默认下次跟进天数'],
     returnAfterLiveDays: [0, 90, '开播后应寄回天数（N）'],
     returnAfterSignDays: [0, 180, '签收后应寄回天数（M）'],
     shipOverdueDays: [1, 30, '待寄样预警天数'],
@@ -339,6 +340,7 @@ export function createApi(domain: Domain, store: AttachmentStore, dataDir: strin
     c.json({
       followStatuses: domain.settings.enumRows('follow_status'),
       replyStallCount: domain.settings.get('replyStallCount'),
+      defaultFollowDays: domain.settings.get('defaultFollowDays'),
       returnAfterLiveDays: domain.settings.get('returnAfterLiveDays'),
       returnAfterSignDays: domain.settings.get('returnAfterSignDays'),
       shipOverdueDays: domain.settings.get('shipOverdueDays'),
