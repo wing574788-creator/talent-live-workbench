@@ -1,10 +1,11 @@
-import { COOP_FOLLOW_STAGES } from '@workbench/shared';
+import { COOP_AUTO_STAGES, COOP_FOLLOW_STAGES } from '@workbench/shared';
 import { and, desc, eq } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 import type { Db } from '../db/index.ts';
 import { changeLog } from '../db/schema.ts';
 import { dateShanghai, todayShanghai } from './automation.ts';
 import { DomainError } from './errors.ts';
+import { outstandingForCooperation } from './sample-ledger.ts';
 import {
   EntityService,
   type EntityConfig,
@@ -105,6 +106,10 @@ export class CooperationService extends EntityService {
           commissionMin: pcts.length ? Math.min(...pcts) : null,
           commissionMax: pcts.length ? Math.max(...pcts) : null,
           commissionUnset: items.some((i) => i.commissionPct == null),
+          // 看板卡片上的"在外 N 件"：只在寄样到退样这几个阶段算（按这场合作关联的寄样单）
+          outstanding: COOP_AUTO_STAGES.includes(c.stage as string)
+            ? outstandingForCooperation(this.registry, c.influencerId as string, c.id as string)
+            : 0,
           ...this.followStats(c.id, fus.get(c.id) ?? []),
         };
       }),
