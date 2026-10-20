@@ -62,9 +62,10 @@ function coop(extra: Record<string, unknown> = {}, nickname = `达人${++seq}`) 
 }
 
 describe('首页：今日待跟进', () => {
-  it('合作按逾期天数从多到少；未到期、已完成/流失/暂缓的不出现', () => {
+  it('合作按逾期天数从多到少；未到期、已完成/流失/暂缓、非跟进阶段的不出现', () => {
     const a = coop({ stage: '洽谈中', nextFollowDate: '2026-10-16' }, '逾期两天');
-    coop({ stage: '已确认', nextFollowDate: TODAY }, '今天');
+    coop({ stage: '待建联', nextFollowDate: TODAY }, '今天');
+    coop({ stage: '已确认', nextFollowDate: '2026-10-01' }, '已确认的旧日期');
     coop({ stage: '洽谈中', nextFollowDate: '2026-10-25' }, '下周');
     coop({ stage: '完成', nextFollowDate: '2026-10-01' }, '已完成');
     coop({ stage: '暂缓', nextFollowDate: '2026-10-01' }, '暂缓');

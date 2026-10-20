@@ -48,6 +48,11 @@ export interface EntityConfig {
   sortFields?: string[];
   /** 业务状态校验：next 是改动后的完整状态；不合法时抛 DomainError。创建、修改、审核通过时调用。 */
   validateState?: (next: Record<string, unknown>, before: Row | undefined) => void;
+  /**
+   * 修改前的联动补丁：根据改动前状态和本次补丁，返回需要一并写入的字段（如离开洽谈中时清空跟进字段）。
+   * 在校验之前合并进补丁，所以同样进变更日志、同样可撤销。
+   */
+  normalizePatch?: (before: Row, patch: Record<string, unknown>) => Record<string, unknown> | void;
   /** 写入落库后（同一事务内）的联动，如阶段自动推进。 */
   afterWrite?: (e: WriteEvent) => void;
 }
@@ -460,7 +465,10 @@ export class EntityService {
     return { status: 'pending', pendingId: id, reason };
   }
 
+  /** 先合并联动补丁（会就地修改 patch），再校验改动后的完整状态 */
   protected assertValid(before: Row, patch: Record<string, unknown>) {
+    const extra = this.config.normalizePatch?.(before, patch);
+    if (extra) Object.assign(patch, extra);
     this.config.validateState?.({ ...before, ...patch }, before);
   }
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSettings } from './FollowUp.tsx';
 import { patchEntity, useAction } from './detail.tsx';
+import { todayStr } from '../lib/format.ts';
 import { Button, Field, Modal, Select, TextInput, Textarea } from './ui.tsx';
 
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -19,12 +20,15 @@ export function useStageChange() {
 
   function request(coop: Row, target: string) {
     if (coop.stage === target) return;
-    const needDate = target === '洽谈中' && !coop.nextFollowDate;
-    const needReason = (target === '流失' || target === '放弃') && !coop.lostReason;
+    // 已过期的下次跟进日期不算数；进入流失/放弃一律重新填写原因（离开时服务端会清掉旧原因）
+    const needDate =
+      target === '洽谈中' && (!coop.nextFollowDate || coop.nextFollowDate < todayStr());
+    const lost = (s: string) => s === '流失' || s === '放弃';
+    const needReason = lost(target) && !(lost(coop.stage) && coop.lostReason);
     if (needDate || needReason) {
       setDate('');
       setReason('');
-      setStatus(coop.followStatus ?? '');
+      setStatus('');
       setPending({ coop, target });
     } else commit(coop, { stage: target });
   }
@@ -43,7 +47,7 @@ export function useStageChange() {
               const t = pending.target;
               const patch: Record<string, unknown> = { stage: t };
               if (t === '洽谈中') {
-                if (!date) return;
+                if (!date || date < todayStr()) return;
                 patch.nextFollowDate = date;
                 if (status) patch.followStatus = status;
               }
@@ -63,7 +67,12 @@ export function useStageChange() {
         <div className="flex flex-col gap-3">
           <p className="m-0 text-muted">洽谈中的合作必须有下次跟进日期。</p>
           <Field label="下次跟进日期 *">
-            <TextInput type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            <TextInput
+              type="date"
+              min={todayStr()}
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
           </Field>
           <Field label="跟进状态">
             <Select value={status} onChange={(e) => setStatus(e.target.value)}>

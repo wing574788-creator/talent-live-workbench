@@ -43,6 +43,13 @@
       "when": 1792333305251,
       "tag": "0005_rich_spencer_smythe",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1792504351626,
+      "tag": "0006_square_metal_master",
+      "breakpoints": true
     }
   ]
 }

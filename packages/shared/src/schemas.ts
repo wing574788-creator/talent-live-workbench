@@ -109,7 +109,6 @@ export const cooperationSchema = obj({
   mode: z.enum(E.COOP_MODES).default('纯佣'),
   stage: z.enum(E.COOP_STAGES).default('待建联'),
   followStatus: text.nullish(),
-  followCount: z.number().int().nonnegative().default(0),
   paymentStatus: z.enum(E.PAYMENT_STATUSES).nullish(),
   slotFeeCents: cents.nullish(),
   liveDate: dateStr.nullish(),

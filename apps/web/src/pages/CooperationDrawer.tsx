@@ -48,7 +48,7 @@ export function CooperationDrawer({ id, onClose }: { id: string; onClose: () => 
         },
         { key: 'nextFollowDate', label: '下次跟进日期', type: 'date' },
         { key: 'mode', label: '合作模式', type: 'select', options: [...COOP_MODES] },
-        ...(c.mode !== '纯佣'
+        ...(c.mode === '坑位费+佣金'
           ? ([
               {
                 key: 'paymentStatus',
@@ -171,7 +171,7 @@ export function CooperationDrawer({ id, onClose }: { id: string; onClose: () => 
           {tab === '样品' && (
             <Section title="关联的寄样单">
               {d.shipments.length === 0 ? (
-                <Empty>还没有寄样单（寄样台账在阶段 4 完成）</Empty>
+                <Empty>还没有关联这场合作的寄样单</Empty>
               ) : (
                 d.shipments.map((s: Row) => (
                   <div key={s.id} className="border-b border-line py-2 last:border-0">

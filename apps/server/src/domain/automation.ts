@@ -1,6 +1,6 @@
 import { COOP_MAIN_STAGES } from '@workbench/shared';
 import type { ServiceRegistry } from './entity-service.ts';
-import { outstandingTotal } from './sample-ledger.ts';
+import { outstandingForCooperation } from './sample-ledger.ts';
 import type { Actor, Row } from './types.ts';
 import { changeLog } from '../db/schema.ts';
 import type { Db } from '../db/index.ts';
@@ -27,7 +27,7 @@ export function dateShanghai(value: string): string {
 /**
  * 合作阶段自动推进（PRD 5.3 验收）：
  *   新建待寄样单 → 待寄样；寄出 → 已排期；开播日过后 → 已开播；
- *   开播后仍有在外样品 → 待退样；样品结清 → 待复盘。
+ *   开播后这场合作的寄样单仍有在外样品 → 待退样；结清 → 待复盘（按寄样单关联的合作计算）。
  * 都只"向前推进"，改动记变更日志（来源标"自动推进"），用户可以手动改回；
  * 基于时间/状态的规则每条合作只自动触发一次，所以手动改回后不会被反复推走。
  */
@@ -84,7 +84,7 @@ export class CooperationAutomation {
   }
 
   private applySampleRules(c: Row) {
-    const out = outstandingTotal(this.registry, c.influencerId as string);
+    const out = outstandingForCooperation(this.registry, c.influencerId as string, c.id as string);
     if (c.stage === '已开播' && out > 0)
       this.move(c, '待退样', ['已开播'], '开播后仍有在外样品', true);
     else if (c.stage === '待退样' && out === 0) {

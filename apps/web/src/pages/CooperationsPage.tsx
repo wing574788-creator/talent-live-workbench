@@ -9,7 +9,13 @@ import {
 } from '@dnd-kit/core';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { COOP_MAIN_STAGES, COOP_MODES, COOP_SIDE_STAGES, COOP_STAGES } from '@workbench/shared';
+import {
+  COOP_FOLLOW_STAGES,
+  COOP_MAIN_STAGES,
+  COOP_MODES,
+  COOP_SIDE_STAGES,
+  COOP_STAGES,
+} from '@workbench/shared';
 import { EntityList, type Col } from '../components/EntityList.tsx';
 import { useSettings } from '../components/FollowUp.tsx';
 import { useAction } from '../components/detail.tsx';
@@ -27,6 +33,10 @@ const pctText = (c: Row) =>
     : c.commissionMin == null
       ? '佣金未确认'
       : `佣金 ${c.commissionMin === c.commissionMax ? c.commissionMin : `${c.commissionMin}–${c.commissionMax}`}%${c.commissionUnset ? '（部分未设）' : ''}`;
+
+/** 下次跟进日期到了（只对待建联/洽谈中有意义，其他阶段的旧日期不算） */
+const isDue = (c: Row, today: string) =>
+  COOP_FOLLOW_STAGES.includes(c.stage) && !!c.nextFollowDate && c.nextFollowDate <= today;
 
 const followLine = (c: Row) =>
   c.followCount === 0
@@ -106,7 +116,7 @@ function Board({ onOpen }: { onOpen: (id: string) => void }) {
   });
   const today = todayStr();
   const all = data.data?.rows ?? [];
-  const rows = dueOnly ? all.filter((c) => c.nextFollowDate && c.nextFollowDate <= today) : all;
+  const rows = dueOnly ? all.filter((c) => isDue(c, today)) : all;
 
   function onDragEnd(e: DragEndEvent) {
     const coop = all.find((c) => c.id === e.active.id);
@@ -243,7 +253,7 @@ function SideDrop({ stage, count }: { stage: string; count: number }) {
 
 function CardView({ c, today, onOpen }: { c: Row; today: string; onOpen: (id: string) => void }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: c.id });
-  const overdue = c.nextFollowDate && c.nextFollowDate <= today;
+  const overdue = isDue(c, today);
   const scheduled = ['已排期', '已开播', '待退样', '待复盘', '完成'].includes(c.stage);
   return (
     <article
@@ -273,7 +283,7 @@ function CardView({ c, today, onOpen }: { c: Row; today: string; onOpen: (id: st
         </div>
       </div>
       <div className="mt-1 text-muted">{followLine(c)}</div>
-      {c.nextFollowDate && (
+      {c.nextFollowDate && COOP_FOLLOW_STAGES.includes(c.stage) && (
         <div className={overdue ? 'text-warn' : 'text-muted'}>
           下次跟进 {fmtDate(c.nextFollowDate)}
           {overdue ? '（待跟进）' : ''}
@@ -341,8 +351,8 @@ function ListView({ onOpen }: { onOpen: (id: string) => void }) {
       header: '下次跟进',
       sort: 'nextFollowDate',
       cell: (r) => (
-        <span className={r.nextFollowDate && r.nextFollowDate <= today ? 'text-warn' : ''}>
-          {fmtDate(r.nextFollowDate)}
+        <span className={isDue(r, today) ? 'text-warn' : ''}>
+          {COOP_FOLLOW_STAGES.includes(r.stage) ? fmtDate(r.nextFollowDate) : ''}
         </span>
       ),
     },

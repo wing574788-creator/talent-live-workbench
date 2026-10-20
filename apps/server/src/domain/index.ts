@@ -94,6 +94,15 @@ const makeConfigs = ({ registry, settings, automation }: HookCtx): EntityConfig[
     schema: S.cooperationSchema,
     sensitivity: anyOf(touches(['slotFeeCents'], '修改金额'), completedCoop),
     filterFields: ['stage', 'followStatus', 'influencerId', 'mode'],
+    normalizePatch: (before, patch) => {
+      const to = patch.stage as string | undefined;
+      if (!to || to === before.stage) return;
+      // 跟进状态和下次跟进日期只属于洽谈中：离开就清空，首页和看板不再把它算作待跟进
+      if (before.stage === '洽谈中') return { nextFollowDate: null, followStatus: null };
+      // 离开流失/放弃时清掉旧原因，再次进入必须重新填写（旧原因留在变更日志里）
+      if ((before.stage === '流失' || before.stage === '放弃') && to !== '流失' && to !== '放弃')
+        return { lostReason: null };
+    },
     sortFields: ['stage', 'nextFollowDate', 'liveDate', 'updatedAt', 'createdAt'],
     validateState: (next, before) => {
       const stage = next.stage as string;

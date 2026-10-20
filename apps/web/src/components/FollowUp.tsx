@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { FOLLOW_METHODS, INTENTS } from '@workbench/shared';
 import { api } from '../lib/api.ts';
-import { fmtDateTime } from '../lib/format.ts';
+import { fmtDateTime, todayStr } from '../lib/format.ts';
 import { useAction } from './detail.tsx';
 import { Badge, Button, Empty, Field, Modal, Select, TextInput, Textarea } from './ui.tsx';
 
@@ -49,13 +49,15 @@ export function FollowUpDialog({
 }) {
   const run = useAction();
   const settings = useSettings();
-  const needDate = coop?.stage === '洽谈中' && !coop?.nextFollowDate;
+  // 洽谈中每记一笔都要定下一次（今天或之后），否则跟一次就断；其他阶段不需要跟进状态和日期
+  const needDate = coop?.stage === '洽谈中';
+  const showFollowFields = !coop || coop.stage === '待建联' || coop.stage === '洽谈中';
   const [f, setF] = useState({
     occurredAt: localNow(),
     method: '微信',
     summary: '',
     intent: '',
-    followStatus: coop?.followStatus ?? '',
+    followStatus: '',
     nextAction: '',
     nextFollowDate: '',
     sourceText: '',
@@ -67,6 +69,8 @@ export function FollowUpDialog({
     if (!f.summary.trim()) return setErr('请填写内容摘要');
     if (needDate && !f.nextFollowDate)
       return setErr('洽谈中的合作需要填写下次跟进日期，避免跟一次就断掉');
+    if (f.nextFollowDate && f.nextFollowDate < todayStr())
+      return setErr('下次跟进日期不能早于今天');
     setErr('');
     const res = await run(
       () =>
@@ -133,7 +137,7 @@ export function FollowUpDialog({
             ))}
           </Select>
         </Field>
-        {target.cooperationId && (
+        {target.cooperationId && showFollowFields && (
           <Field label="跟进状态" hint="保存后同步到合作">
             <Select value={f.followStatus} onChange={(e) => set('followStatus', e.target.value)}>
               <option value="">—</option>
@@ -150,16 +154,19 @@ export function FollowUpDialog({
             placeholder="如：发选款表"
           />
         </Field>
-        <Field
-          label={needDate ? '下次跟进日期 *' : '下次跟进日期'}
-          hint={target.cooperationId ? '保存后同步到合作' : undefined}
-        >
-          <TextInput
-            type="date"
-            value={f.nextFollowDate}
-            onChange={(e) => set('nextFollowDate', e.target.value)}
-          />
-        </Field>
+        {showFollowFields && (
+          <Field
+            label={needDate ? '下次跟进日期 *' : '下次跟进日期'}
+            hint={target.cooperationId ? '保存后同步到合作' : undefined}
+          >
+            <TextInput
+              type="date"
+              min={todayStr()}
+              value={f.nextFollowDate}
+              onChange={(e) => set('nextFollowDate', e.target.value)}
+            />
+          </Field>
+        )}
         <div className="col-span-2">
           <Field label="原文出处（可选）">
             <Textarea

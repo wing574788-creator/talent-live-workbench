@@ -1,3 +1,4 @@
+import { COOP_FOLLOW_STAGES } from '@workbench/shared';
 import { addDays, keyTotals } from './sample-ledger.ts';
 import { dateShanghai, todayShanghai } from './automation.ts';
 import type { ServiceRegistry } from './entity-service.ts';
@@ -11,6 +12,8 @@ const dayDiff = (from: string, to: string) =>
 
 /** 不再需要跟进的阶段 */
 const CLOSED = new Set(['完成', '流失', '放弃', '暂缓']);
+/** 下次跟进日期只对待建联/洽谈中有意义（离开洽谈中会被清空；旧数据也在这里过滤） */
+export const FOLLOW_STAGES = new Set(COOP_FOLLOW_STAGES);
 /** 已经开播（含之后）的阶段 */
 const LIVE_DONE = new Set(['已开播', '待退样', '待复盘', '完成']);
 
@@ -105,7 +108,7 @@ export class HomeService {
 
     for (const c of this.reg.get('cooperation').list()) {
       const next = c.nextFollowDate as string | null;
-      if (!next || next > today || CLOSED.has(c.stage as string)) continue;
+      if (!next || next > today || !FOLLOW_STAGES.has(c.stage as string)) continue;
       const names = cps
         .filter((cp) => cp.cooperationId === c.id)
         .map((cp) => products.get(cp.productId as string)?.name as string | undefined)

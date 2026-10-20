@@ -155,6 +155,29 @@ export function outstandingTotal(registry: ServiceRegistry, influencerId: string
   return keyTotals(registry, influencerId).reduce((n, t) => n + Math.max(0, t.outstanding), 0);
 }
 
+/**
+ * 某场合作的在外件数：只算关联到这场合作的寄样单上还没冲抵完的部分。
+ * 冲抵仍按达人整体从最早寄出开始（PRD 4.6），这里只是按寄样单归属拆开；
+ * 没有关联合作的寄样单不算到任何合作上。
+ */
+export function outstandingForCooperation(
+  registry: ServiceRegistry,
+  influencerId: string,
+  cooperationId: string,
+): number {
+  const mine = new Set(
+    registry
+      .get('sample_shipment')
+      .findBy('influencerId', influencerId)
+      .filter((s) => s.cooperationId === cooperationId)
+      .map((s) => s.id as string),
+  );
+  if (!mine.size) return 0;
+  return replayLedger(registry, influencerId)
+    .lines.filter((l) => mine.has(l.shipmentId))
+    .reduce((n, l) => n + Math.max(0, l.open), 0);
+}
+
 /** 按款色码的在外数量（供退回、核销时校验数量上限）。 */
 export function outstandingOf(
   registry: ServiceRegistry,

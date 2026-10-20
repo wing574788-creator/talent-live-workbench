@@ -83,7 +83,7 @@ describe('阶段规则', () => {
     expect(() => setup({ stage: '洽谈中' })).toThrow(/下次跟进日期/);
     const { coop } = setup();
     expect(() => upd(coop.id, { stage: '洽谈中' })).toThrow(/下次跟进日期/);
-    expect(upd(coop.id, { stage: '洽谈中', nextFollowDate: '2026-10-21' }).status).toBe('applied');
+    expect(upd(coop.id, { stage: '洽谈中', nextFollowDate: '2099-10-21' }).status).toBe('applied');
   });
 
   it('平台账号必须属于所选达人', () => {
@@ -112,7 +112,7 @@ describe('阶段规则', () => {
   });
 
   it('跟进状态必须在可选项里；设置里增加后即可使用，删除后不影响已有记录', () => {
-    const { coop } = setup({ stage: '洽谈中', nextFollowDate: '2026-10-21' });
+    const { coop } = setup({ stage: '洽谈中', nextFollowDate: '2099-10-21' });
     expect(d.settings.followStatuses()).toEqual([
       '已发邀约',
       '待回复',
@@ -169,22 +169,22 @@ describe('跟进记录', () => {
   });
 
   it('保存后同步跟进状态和下次跟进日期到合作；时间线也挂到达人', () => {
-    const { coop, inf } = setup({ stage: '洽谈中', nextFollowDate: '2026-10-20' });
-    followUp(coop.id, { followStatus: '报价中', nextFollowDate: '2026-10-25' });
-    expect(coopOf(coop.id)).toMatchObject({ followStatus: '报价中', nextFollowDate: '2026-10-25' });
+    const { coop, inf } = setup({ stage: '洽谈中', nextFollowDate: '2099-10-20' });
+    followUp(coop.id, { followStatus: '报价中', nextFollowDate: '2099-10-25' });
+    expect(coopOf(coop.id)).toMatchObject({ followStatus: '报价中', nextFollowDate: '2099-10-25' });
     expect(d.read.influencerDetail(inf.id).followUps).toHaveLength(1);
   });
 
   it('洽谈中的合作保存跟进时没有任何下次跟进日期会被拒绝（提示补上）', () => {
-    const { coop } = setup({ stage: '洽谈中', nextFollowDate: '2026-10-20' });
+    const { coop } = setup({ stage: '洽谈中', nextFollowDate: '2099-10-20' });
     sqlite.exec(`update cooperations set next_follow_date = null where id = '${coop.id}'`); // 模拟历史遗留数据
     expect(() => followUp(coop.id)).toThrow(/下次跟进日期/);
-    expect(followUp(coop.id, { nextFollowDate: '2026-10-22' }).status).toBe('applied');
-    expect(coopOf(coop.id).nextFollowDate).toBe('2026-10-22');
+    expect(followUp(coop.id, { nextFollowDate: '2099-10-22' }).status).toBe('applied');
+    expect(coopOf(coop.id).nextFollowDate).toBe('2099-10-22');
   });
 
   it('跟进次数、距上次跟进天数；连续 3 次"待回复"提醒，阈值可配置', () => {
-    const { coop } = setup({ stage: '洽谈中', nextFollowDate: '2026-10-20' });
+    const { coop } = setup({ stage: '洽谈中', nextFollowDate: '2099-10-20' });
     const at = (i: number) => new Date(Date.now() - (10 - i) * 1000).toISOString();
     followUp(coop.id, { followStatus: '已发邀约', occurredAt: at(1) });
     followUp(coop.id, { followStatus: '待回复', occurredAt: at(2) });
@@ -311,5 +311,73 @@ describe('阶段自动推进（PRD 5.3 验收）', () => {
       }),
     );
     expect(coopOf(coop.id).stage).toBe('待复盘');
+  });
+});
+
+describe('合作跟踪简化：跟进字段与样品口径', () => {
+  const shipItem = (infId: string, coopId: string | null, qty = 1) => {
+    const s = row(
+      d.entity('sample_shipment').create(user, { influencerId: infId, cooperationId: coopId }),
+    );
+    row(
+      d.entity('sample_shipment_item').create(user, {
+        shipmentId: s.id,
+        styleNo: 'A001',
+        productName: '羊毛大衣',
+        color: '黑色',
+        size: 'M',
+        qty,
+      }),
+    );
+    d.entity('sample_shipment').update(user, s.id, { status: '已寄出', shippedAt: '2026-10-05' });
+    return s;
+  };
+
+  it('在外样品按关联合作计算：同一达人另一场合作的在外样品不会把这场推到待退样', () => {
+    const { coop: a, inf, acc } = setup({ stage: '已确认', liveDate: '2026-10-10' });
+    const b = row(
+      d.entity('cooperation').create(user, {
+        influencerId: inf.id,
+        platformAccountId: acc.id,
+        stage: '已排期',
+        liveDate: '2026-10-08',
+      }),
+    );
+    shipItem(inf.id, a.id, 2); // A 的样品在外
+    shipItem(inf.id, null, 1); // 没关联合作的寄样单不参与推进
+    d.automation.runDaily('2026-10-11');
+    expect(coopOf(a.id).stage).toBe('待退样');
+    expect(coopOf(b.id).stage).toBe('已开播'); // 以前会被 A 的样品推到待退样
+  });
+
+  it('离开洽谈中清空下次跟进日期和跟进状态，首页不再算待跟进；改回洽谈中要重新填', () => {
+    const { coop } = setup({
+      stage: '洽谈中',
+      nextFollowDate: '2026-10-01',
+      followStatus: '报价中',
+    });
+    expect(d.home.dueFollows('2026-10-20').some((r) => r.id === coop.id)).toBe(true);
+    upd(coop.id, { stage: '已确认' });
+    expect(coopOf(coop.id)).toMatchObject({ nextFollowDate: null, followStatus: null });
+    expect(d.home.dueFollows('2026-10-20').some((r) => r.id === coop.id)).toBe(false);
+    expect(() => upd(coop.id, { stage: '洽谈中' })).toThrow(/下次跟进日期/);
+  });
+
+  it('离开流失后旧原因被清掉，再次进入流失必须重新填写', () => {
+    const { coop } = setup();
+    upd(coop.id, { stage: '流失', lostReason: '没档期' });
+    upd(coop.id, { stage: '洽谈中', nextFollowDate: '2099-01-01' });
+    expect(coopOf(coop.id).lostReason).toBeNull();
+    expect(() => upd(coop.id, { stage: '流失' })).toThrow(/原因/);
+  });
+
+  it('洽谈中记跟进：合作上已过期的日期不算数；非跟进阶段的合作不回写跟进状态和日期', () => {
+    const { coop } = setup({ stage: '洽谈中', nextFollowDate: '2020-01-01' });
+    expect(() => followUp(coop.id)).toThrow(/今天或之后/);
+    expect(followUp(coop.id, { nextFollowDate: '2099-01-02' }).status).toBe('applied');
+
+    const { coop: done } = setup({ stage: '已排期' });
+    followUp(done.id, { followStatus: '报价中', nextFollowDate: '2099-01-03' });
+    expect(coopOf(done.id)).toMatchObject({ followStatus: null, nextFollowDate: null });
   });
 });

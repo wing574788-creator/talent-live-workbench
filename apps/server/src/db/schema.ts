@@ -177,7 +177,6 @@ export const cooperations = sqliteTable(
     mode: text('mode').notNull().default('纯佣'),
     stage: text('stage').notNull().default('待建联'),
     followStatus: text('follow_status'),
-    followCount: integer('follow_count').notNull().default(0),
     paymentStatus: text('payment_status'),
     slotFeeCents: integer('slot_fee_cents'),
     liveDate: text('live_date'),

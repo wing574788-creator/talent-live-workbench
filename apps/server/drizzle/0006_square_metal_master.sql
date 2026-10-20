@@ -1,0 +1,1 @@
+ALTER TABLE `cooperations` DROP COLUMN `follow_count`;

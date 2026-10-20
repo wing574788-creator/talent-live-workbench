@@ -1,3 +1,4 @@
+import { COOP_FOLLOW_STAGES } from '@workbench/shared';
 import { and, desc, eq } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 import type { Db } from '../db/index.ts';
@@ -159,12 +160,18 @@ export class FollowUpService extends EntityService {
       const coop = data.cooperationId ? coopSvc.require(data.cooperationId) : undefined;
       const sync: Record<string, unknown> = {};
       if (coop) {
-        if (data.followStatus) sync.followStatus = data.followStatus;
-        if (data.nextFollowDate) sync.nextFollowDate = data.nextFollowDate;
-        // 洽谈中的合作必须有下次跟进日期，避免跟一次就断掉
-        const next = (sync.nextFollowDate ?? coop.nextFollowDate) as string | null;
+        // 跟进状态和下次跟进日期只属于待建联/洽谈中，其他阶段的合作只记跟进内容，不回写
+        if (COOP_FOLLOW_STAGES.includes(coop.stage as string)) {
+          if (data.followStatus) sync.followStatus = data.followStatus;
+          if (data.nextFollowDate) sync.nextFollowDate = data.nextFollowDate;
+        }
+        // 洽谈中的合作必须有下次跟进日期（已过期的不算），避免跟一次就断掉
+        const kept = coop.nextFollowDate as string | null;
+        const next =
+          (sync.nextFollowDate as string | undefined) ??
+          (kept && kept >= todayShanghai() ? kept : null);
         if (coop.stage === '洽谈中' && !next) {
-          throw new DomainError('validation', '洽谈中的合作需要填写下次跟进日期');
+          throw new DomainError('validation', '洽谈中的合作需要填写今天或之后的下次跟进日期');
         }
         // 没有显式填写达人时，沿用合作所属的达人，时间线才能在达人详情里看到
         if (!data.influencerId) data.influencerId = coop.influencerId;

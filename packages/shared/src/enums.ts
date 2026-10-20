@@ -20,6 +20,10 @@ export const COOP_MAIN_STAGES = [
 ] as const;
 export const COOP_SIDE_STAGES = ['暂缓', '流失', '放弃'] as const;
 export const COOP_STAGES = [...COOP_MAIN_STAGES, ...COOP_SIDE_STAGES] as const;
+/** 下次跟进日期、跟进状态只对这两个阶段有意义；离开洽谈中会被清空 */
+export const COOP_FOLLOW_STAGES: readonly string[] = ['待建联', '洽谈中'];
+/** 由寄样和开播日自动推进的阶段：看板上不接受拖入，抽屉里仍可手动改 */
+export const COOP_AUTO_STAGES: readonly string[] = ['待寄样', '已排期', '已开播', '待退样'];
 export const PAYMENT_STATUSES = ['未付', '已付', '已退'] as const;
 export const DEFAULT_FOLLOW_STATUSES = [
   '已发邀约',
