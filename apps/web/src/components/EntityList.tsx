@@ -1,8 +1,18 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { api, downloadFile, qs } from '../lib/api.ts';
-import { Button, ConfirmDialog, Empty, Modal, Select, TABLE, TextInput, useToast } from './ui.tsx';
+import {
+  Button,
+  ConfirmDialog,
+  Empty,
+  Modal,
+  Select,
+  TABLE,
+  TextInput,
+  cx,
+  useToast,
+} from './ui.tsx';
 
 export interface Col<T> {
   id: string;
@@ -37,6 +47,42 @@ interface ViewConfig {
 }
 
 const PAGE = 50;
+
+const POPOVER = 'absolute top-11 z-20 rounded-2xl border border-line bg-surface p-2.5 shadow-xl';
+const MENU_ITEM =
+  'flex min-h-8 w-full cursor-pointer items-center rounded-lg border-0 bg-transparent px-2 text-left text-sm text-ink hover:bg-bg';
+
+/** 按筛选下拉个数选工具栏容器宽度断点：够宽就直接摆出下拉，否则收进「筛选」弹层。类名要写全，Tailwind 才扫描得到 */
+const INLINE_AT = [
+  { show: '', hide: '' },
+  { show: '@2xl:flex', hide: '@2xl:hidden' },
+  { show: '@3xl:flex', hide: '@3xl:hidden' },
+  { show: '@4xl:flex', hide: '@4xl:hidden' },
+  { show: '@5xl:flex', hide: '@5xl:hidden' },
+  { show: '@6xl:flex', hide: '@6xl:hidden' },
+];
+
+/** 弹层开关：点外面或按 Esc 关闭 */
+function usePopover() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+  return { open, setOpen, ref };
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function EntityList<T extends { id: string } = any>({
@@ -76,6 +122,9 @@ export function EntityList<T extends { id: string } = any>({
   const [naming, setNaming] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [viewName, setViewName] = useState('');
+  const filterPop = usePopover();
+  const viewPop = usePopover();
+  const morePop = usePopover();
 
   // 搜索框防抖
   useEffect(() => {
@@ -183,103 +232,190 @@ export function EntityList<T extends { id: string } = any>({
     setPage(0);
   }
 
+  const activeFilters =
+    Object.values(cfg.filters).filter(Boolean).length +
+    Object.values(cfg.custom).filter(Boolean).length;
+  const filterCount = filters.length + selectCustom.length;
+  // 筛选下拉越多，需要的宽度越大；容器比断点窄就收进「筛选」按钮
+  const inlineAt = INLINE_AT[Math.min(filterCount, INLINE_AT.length - 1)]!;
+
+  const filterSelects = (
+    <>
+      {filters.map((f) => (
+        <Select
+          key={f.key}
+          aria-label={f.label}
+          className="!w-auto shrink-0"
+          value={cfg.filters[f.key] ?? ''}
+          onChange={(e) => {
+            setCfg({ ...cfg, filters: { ...cfg.filters, [f.key]: e.target.value } });
+            setPage(0);
+          }}
+        >
+          <option value="">{f.label}：全部</option>
+          {f.options.map((o) => (
+            <option key={o}>{o}</option>
+          ))}
+        </Select>
+      ))}
+      {selectCustom.map((d) => (
+        <Select
+          key={d.key}
+          aria-label={d.label}
+          className="!w-auto shrink-0"
+          value={cfg.custom[d.key] ?? ''}
+          onChange={(e) => {
+            setCfg({ ...cfg, custom: { ...cfg.custom, [d.key]: e.target.value } });
+            setPage(0);
+          }}
+        >
+          <option value="">{d.label}：全部</option>
+          {d.options!.map((o) => (
+            <option key={o}>{o}</option>
+          ))}
+        </Select>
+      ))}
+    </>
+  );
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="w-64">
-          <TextInput
-            type="search"
-            aria-label="搜索"
-            placeholder={searchPlaceholder}
-            value={qInput}
-            onChange={(e) => setQInput(e.target.value)}
-          />
-        </div>
-        {filters.map((f) => (
-          <Select
-            key={f.key}
-            aria-label={f.label}
-            className="!w-auto"
-            value={cfg.filters[f.key] ?? ''}
-            onChange={(e) => {
-              setCfg({ ...cfg, filters: { ...cfg.filters, [f.key]: e.target.value } });
-              setPage(0);
-            }}
-          >
-            <option value="">{f.label}：全部</option>
-            {f.options.map((o) => (
-              <option key={o}>{o}</option>
-            ))}
-          </Select>
-        ))}
-        {selectCustom.map((d) => (
-          <Select
-            key={d.key}
-            aria-label={d.label}
-            className="!w-auto"
-            value={cfg.custom[d.key] ?? ''}
-            onChange={(e) => {
-              setCfg({ ...cfg, custom: { ...cfg.custom, [d.key]: e.target.value } });
-              setPage(0);
-            }}
-          >
-            <option value="">{d.label}：全部</option>
-            {d.options!.map((o) => (
-              <option key={o}>{o}</option>
-            ))}
-          </Select>
-        ))}
-        <div className="ml-auto flex flex-wrap items-center gap-2">
-          <Select
-            aria-label="保存的视图"
-            className="!w-auto"
-            value=""
-            onChange={(e) => {
-              const v = views.data?.rows.find((x) => x.id === e.target.value);
-              if (v) applyView(v.config);
-            }}
-          >
-            <option value="">视图…</option>
-            {views.data?.rows.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.name}
-              </option>
-            ))}
-          </Select>
-          <Button
-            onClick={() => {
-              setViewName('');
-              setNaming(true);
-            }}
-          >
-            保存视图
-          </Button>
-          <Button onClick={() => setExporting(true)}>导出</Button>
-          <div className="relative">
-            <Button onClick={() => setShowCols(!showCols)}>列</Button>
-            {showCols && (
-              <div className="absolute right-0 top-11 z-20 w-52 rounded-2xl border border-line bg-surface p-2.5 shadow-xl">
-                {allCols.map((c) => (
-                  <label key={c.id} className="flex min-h-8 cursor-pointer items-center gap-2 px-1">
-                    <input
-                      type="checkbox"
-                      checked={!cfg.hidden.includes(c.id)}
-                      onChange={(e) =>
-                        setCfg({
-                          ...cfg,
-                          hidden: e.target.checked
-                            ? cfg.hidden.filter((h) => h !== c.id)
-                            : [...cfg.hidden, c.id],
-                        })
-                      }
-                    />
-                    {c.header}
-                  </label>
-                ))}
-              </div>
-            )}
+      <div className="@container">
+        <div className="flex flex-nowrap items-center gap-3">
+          <div className="min-w-40 max-w-72 flex-1">
+            <TextInput
+              type="search"
+              aria-label="搜索"
+              placeholder={searchPlaceholder}
+              value={qInput}
+              onChange={(e) => setQInput(e.target.value)}
+            />
           </div>
-          {headerActions}
+          {filterCount > 0 && (
+            <>
+              <div className={cx('hidden shrink-0 items-center gap-3', inlineAt.show)}>
+                {filterSelects}
+              </div>
+              <div ref={filterPop.ref} className={cx('relative shrink-0', inlineAt.hide)}>
+                <Button
+                  aria-expanded={filterPop.open}
+                  onClick={() => filterPop.setOpen(!filterPop.open)}
+                >
+                  {activeFilters ? `筛选（已选 ${activeFilters} 项）` : '筛选'}
+                </Button>
+                {filterPop.open && (
+                  <div
+                    className={cx(POPOVER, 'left-0 flex w-56 flex-col gap-2 [&>select]:!w-full')}
+                  >
+                    {filterSelects}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            <div ref={viewPop.ref} className="relative">
+              <Button aria-expanded={viewPop.open} onClick={() => viewPop.setOpen(!viewPop.open)}>
+                视图 ▾
+              </Button>
+              {viewPop.open && (
+                <div className={cx(POPOVER, 'right-0 w-56')} role="menu">
+                  {views.data?.rows.length ? (
+                    views.data.rows.map((v) => (
+                      <button
+                        key={v.id}
+                        type="button"
+                        role="menuitem"
+                        className={MENU_ITEM}
+                        onClick={() => {
+                          applyView(v.config);
+                          viewPop.setOpen(false);
+                        }}
+                      >
+                        {v.name}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="px-2 py-1.5 text-sm text-muted">还没有保存的视图</div>
+                  )}
+                  <div className="my-1.5 border-t border-line" />
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className={MENU_ITEM}
+                    onClick={() => {
+                      viewPop.setOpen(false);
+                      setViewName('');
+                      setNaming(true);
+                    }}
+                  >
+                    保存当前视图…
+                  </button>
+                </div>
+              )}
+            </div>
+            <div ref={morePop.ref} className="relative">
+              <Button
+                aria-label="更多操作"
+                aria-expanded={morePop.open}
+                className="!px-3"
+                onClick={() => {
+                  morePop.setOpen(!morePop.open);
+                  setShowCols(false);
+                }}
+              >
+                ···
+              </Button>
+              {morePop.open &&
+                (showCols ? (
+                  <div className={cx(POPOVER, 'right-0 w-52')}>
+                    {allCols.map((c) => (
+                      <label
+                        key={c.id}
+                        className="flex min-h-8 cursor-pointer items-center gap-2 px-1"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={!cfg.hidden.includes(c.id)}
+                          onChange={(e) =>
+                            setCfg({
+                              ...cfg,
+                              hidden: e.target.checked
+                                ? cfg.hidden.filter((h) => h !== c.id)
+                                : [...cfg.hidden, c.id],
+                            })
+                          }
+                        />
+                        {c.header}
+                      </label>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={cx(POPOVER, 'right-0 w-40')} role="menu">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={MENU_ITEM}
+                      onClick={() => {
+                        morePop.setOpen(false);
+                        setExporting(true);
+                      }}
+                    >
+                      导出…
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className={MENU_ITEM}
+                      onClick={() => setShowCols(true)}
+                    >
+                      显示列
+                    </button>
+                  </div>
+                ))}
+            </div>
+            {headerActions}
+          </div>
         </div>
       </div>
 
