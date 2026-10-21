@@ -256,26 +256,20 @@ function Board({ onOpen, onQuick }: { onOpen: (id: string) => void; onQuick: (c:
         </label>
       </div>
       <DndContext sensors={sensors} onDragEnd={onDragEnd}>
-        <div className="flex items-start gap-3 overflow-x-auto pb-2">
-          {before.map((s) => (
-            <div key={s} className="pt-8">
-              {col(s)}
-            </div>
-          ))}
-          <div className="flex flex-col gap-1.5 rounded-[30px] border-2 border-dashed border-line-strong p-1.5">
-            <div className="h-5 px-3 text-xs font-bold text-muted">
+        {/* 按看板自身宽度（而不是窗口宽度）决定阶段标签放左边还是上方 */}
+        <div className="@container flex flex-col gap-2">
+          {before.map(col)}
+          <div className="flex flex-col gap-2 rounded-[30px] border-2 border-dashed border-line-strong p-1.5">
+            <div className="px-3 pt-1 text-xs font-bold text-muted">
               执行中 · 由寄样和开播日自动推进，不用拖
             </div>
-            <div className="flex items-start gap-2">{COOP_AUTO_STAGES.map(col)}</div>
+            {COOP_AUTO_STAGES.map(col)}
           </div>
-          {after.map((s) => (
-            <div key={s} className="pt-8">
-              {col(s)}
-            </div>
-          ))}
-          {COOP_SIDE_STAGES.map((s) => (
-            <div key={s} className="pt-8">
+          {after.map(col)}
+          <div className="mt-2 flex flex-col gap-2">
+            {COOP_SIDE_STAGES.map((s) => (
               <SideColumn
+                key={s}
                 stage={s}
                 cards={of(s)}
                 open={openSide.has(s)}
@@ -289,8 +283,8 @@ function Board({ onOpen, onQuick }: { onOpen: (id: string) => void; onQuick: (c:
                 onOpen={onOpen}
                 onQuick={onQuick}
               />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </DndContext>
       {dialog}
@@ -298,24 +292,47 @@ function Board({ onOpen, onQuick }: { onOpen: (id: string) => void; onQuick: (c:
   );
 }
 
-function ColumnTitle({ stage, count }: { stage: string; count: number }) {
+/** 泳道左侧（窄屏时在上方）的阶段标签：色点、阶段名、数量 */
+function LaneLabel({ stage, count }: { stage: string; count: number }) {
   return (
-    <h3 className="m-0 flex items-center justify-between gap-2 px-1.5 pt-1 text-sm font-extrabold">
-      <span className="flex items-center gap-2">
-        <span
-          aria-hidden="true"
-          className="size-2.5 rounded-full"
-          style={{ background: STAGE_DOT[stage] ?? '#8e88ff' }}
-        />
-        {stage}
-      </span>
+    <span className="flex shrink-0 items-center gap-2 text-sm font-extrabold text-ink @xl:w-[132px]">
+      <span
+        aria-hidden="true"
+        className="size-2.5 shrink-0 rounded-full"
+        style={{ background: STAGE_DOT[stage] ?? '#8e88ff' }}
+      />
+      <span className="truncate">{stage}</span>
       <span className="min-w-6 rounded-full bg-surface px-2 text-center text-xs font-extrabold">
         {count}
       </span>
-    </h3>
+    </span>
   );
 }
 
+/** 卡片区：固定 260px 宽的卡片自动换行，不横向滚动 */
+function LaneCards({
+  cards,
+  today,
+  onOpen,
+  onQuick,
+}: {
+  cards: Row[];
+  today: string;
+  onOpen: (id: string) => void;
+  onQuick: (c: Row) => void;
+}) {
+  return (
+    <div className="flex min-w-0 flex-1 flex-wrap items-start gap-3">
+      {cards.map((c) => (
+        <div key={c.id} className="w-[260px] max-w-full">
+          <CardView c={c} today={today} onOpen={onOpen} onQuick={onQuick} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** 一个阶段一行；整行可拖入，拖到哪一行就改到哪个阶段 */
 function Column({
   stage,
   cards,
@@ -330,48 +347,35 @@ function Column({
   onQuick: (c: Row) => void;
 }) {
   const auto = COOP_AUTO_STAGES.includes(stage);
-  // 执行中的几列由系统推进，不接受拖入（抽屉里仍可手动改）
+  // 执行中的几行由系统推进，不接受拖入（抽屉里仍可手动改）
   const { setNodeRef, isOver } = useDroppable({ id: stage, disabled: auto });
-  if (!cards.length && !isOver)
-    return (
-      <section
-        ref={setNodeRef}
-        aria-label={`${stage}（空）`}
-        title={stage}
-        className="flex min-h-40 w-12 shrink-0 flex-col items-center gap-2 rounded-3xl bg-[#e9e7f7] py-3 text-xs font-extrabold text-muted"
-      >
-        <span
-          aria-hidden="true"
-          className="size-2.5 rounded-full"
-          style={{ background: STAGE_DOT[stage] ?? '#8e88ff' }}
-        />
-        <span className="[writing-mode:vertical-rl]">{stage}</span>
-        <span>0</span>
-      </section>
-    );
+  const empty = !cards.length;
   return (
     <section
       ref={setNodeRef}
-      aria-label={stage}
+      aria-label={empty ? `${stage}（空）` : stage}
       className={cx(
-        'flex w-[260px] shrink-0 flex-col gap-3 rounded-3xl bg-[#e9e7f7] p-3',
+        'flex gap-2 rounded-3xl bg-[#e9e7f7] @xl:gap-3',
+        // 空阶段始终是一条细行；有卡片时窄屏把标签放到卡片区上方
+        empty ? 'min-h-11 items-center px-3 py-2' : 'flex-col p-3 @xl:flex-row @xl:items-start',
         isOver && 'outline-2 -outline-offset-2 outline-brand outline-dashed',
       )}
     >
-      <ColumnTitle stage={stage} count={cards.length} />
-      {isOver && (
-        <div className="rounded-[20px] border-2 border-dashed border-[#8e88ff] bg-[#f3f2ff] p-3.5 text-center text-[13px] font-bold text-brand-dark">
-          松手放到这里
+      <h3 className={cx('m-0', !empty && '@xl:pt-1.5')}>
+        <LaneLabel stage={stage} count={cards.length} />
+      </h3>
+      {empty ? (
+        <div className="text-xs font-bold text-muted">
+          {isOver ? '松手放到这里' : auto ? '暂无' : '拖到这里'}
         </div>
+      ) : (
+        <LaneCards cards={cards} today={today} onOpen={onOpen} onQuick={onQuick} />
       )}
-      {cards.map((c) => (
-        <CardView key={c.id} c={c} today={today} onOpen={onOpen} onQuick={onQuick} />
-      ))}
     </section>
   );
 }
 
-/** 暂缓 / 流失 / 放弃：默认收起成窄条（可以拖进来），点开看里面是谁 */
+/** 暂缓 / 流失 / 放弃：默认收起成一行（可以拖进来），点开看里面是谁 */
 function SideColumn({
   stage,
   cards,
@@ -390,42 +394,35 @@ function SideColumn({
   onQuick: (c: Row) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: stage });
-  if (!open)
-    return (
-      <button
-        ref={setNodeRef}
-        type="button"
-        onClick={onToggle}
-        aria-label={`展开${stage}（${cards.length}）`}
-        className={cx(
-          'flex min-h-40 w-12 shrink-0 cursor-pointer flex-col items-center gap-2 rounded-3xl border-2 border-dashed py-3 text-xs font-extrabold',
-          isOver
-            ? 'border-brand bg-brand-soft text-brand-dark'
-            : 'border-line-strong bg-transparent text-muted',
-        )}
-      >
-        <span className="[writing-mode:vertical-rl]">{stage}</span>
-        <span>{cards.length}</span>
-      </button>
-    );
   return (
     <section
       ref={setNodeRef}
       aria-label={stage}
       className={cx(
-        'flex w-[240px] shrink-0 flex-col gap-3 rounded-3xl border-2 border-dashed border-line-strong p-3',
-        isOver && 'border-brand bg-brand-soft',
+        'flex flex-col gap-2 rounded-3xl border-2 border-dashed px-3 py-2',
+        isOver ? 'border-brand bg-brand-soft' : 'border-line-strong',
       )}
     >
-      <div className="flex items-center justify-between">
-        <ColumnTitle stage={stage} count={cards.length} />
-        <Button variant="ghost" className="!min-h-8 !px-2 !text-xs" onClick={onToggle}>
-          收起
-        </Button>
-      </div>
-      {cards.map((c) => (
-        <CardView key={c.id} c={c} today={today} onOpen={onOpen} onQuick={onQuick} />
-      ))}
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        aria-label={`${open ? '收起' : '展开'}${stage}（${cards.length}）`}
+        className="flex min-h-7 cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left text-muted"
+      >
+        <LaneLabel stage={stage} count={cards.length} />
+        <span className="text-xs font-bold">
+          {isOver ? '松手放到这里' : open ? '收起' : '展开'}
+        </span>
+      </button>
+      {open &&
+        (cards.length ? (
+          <div className="pb-1">
+            <LaneCards cards={cards} today={today} onOpen={onOpen} onQuick={onQuick} />
+          </div>
+        ) : (
+          <div className="pb-1 text-xs font-bold text-muted">暂无，可以把卡片拖到这一行</div>
+        ))}
     </section>
   );
 }
