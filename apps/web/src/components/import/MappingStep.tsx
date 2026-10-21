@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../../lib/api.ts';
 import { Badge, Button, Select, TextInput, useToast } from '../ui.tsx';
+import { useAiFeature } from '../ai/AiSettings.tsx';
 import {
   CUSTOM_TYPE_LABEL,
   cellText,
@@ -27,6 +28,7 @@ export function MappingStep({
     setSheets(sheets.map((s) => (s.name === name ? fn(s) : s)));
   const toast = useToast();
   const [busy, setBusy] = useState<string | null>(null);
+  const mappingOn = useAiFeature('mapping');
   /** 由 AI 建议填进来的列（提醒用户再看一眼） */
   const [aiCols, setAiCols] = useState<Record<string, number[]>>({});
 
@@ -122,9 +124,11 @@ export function MappingStep({
                   {s.name}{' '}
                   <span className="font-normal text-muted">→ 导入成「{target.label}」</span>
                 </h3>
-                <Button disabled={busy === s.name} onClick={() => askAi(s)}>
-                  {busy === s.name ? 'AI 分析中…' : 'AI 建议映射'}
-                </Button>
+                {mappingOn && (
+                  <Button disabled={busy === s.name} onClick={() => askAi(s)}>
+                    {busy === s.name ? 'AI 分析中…' : 'AI 建议映射'}
+                  </Button>
+                )}
               </div>
               {missing.length > 0 && (
                 <p

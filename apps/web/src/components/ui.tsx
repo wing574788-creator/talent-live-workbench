@@ -470,3 +470,64 @@ export function CountUp({ value }: { value: number }) {
   }, [value, reduce]);
   return <span ref={ref}>{value}</span>;
 }
+
+/** 页面内的分区（二级导航）：当前分区记在地址栏 ?tab=，刷新后还在原处 */
+export function useTabParam<T extends string>(
+  keys: readonly T[],
+  fallback: T,
+): [T, (k: T) => void] {
+  const read = () => {
+    const v = new URLSearchParams(window.location.search).get('tab') as T | null;
+    return v && keys.includes(v) ? v : fallback;
+  };
+  const [tab, setTab] = useState<T>(read);
+  const change = useCallback((k: T) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', k);
+    window.history.replaceState(window.history.state, '', url);
+    setTab(k);
+  }, []);
+  return [tab, change];
+}
+
+/** 左侧二级导航 + 右侧内容（设置页、AI 助手页用） */
+export function SubNavLayout<T extends string>({
+  label,
+  items,
+  value,
+  onChange,
+  children,
+}: {
+  label: string;
+  items: readonly { key: T; label: string; hint?: string }[];
+  value: T;
+  onChange: (k: T) => void;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-5 md:flex-row md:items-start">
+      <nav
+        aria-label={label}
+        className="flex shrink-0 gap-1 overflow-x-auto rounded-3xl bg-surface p-2 shadow-[0_1px_0_var(--color-line)] md:sticky md:top-8 md:w-48 md:flex-col"
+      >
+        {items.map((it) => (
+          <button
+            key={it.key}
+            type="button"
+            aria-current={value === it.key ? 'page' : undefined}
+            onClick={() => onChange(it.key)}
+            className={cx(
+              'min-h-10 cursor-pointer whitespace-nowrap rounded-2xl border-0 px-3.5 text-left text-sm transition-colors',
+              value === it.key
+                ? 'bg-ink font-bold text-white'
+                : 'bg-transparent font-medium text-ink-2 hover:bg-bg',
+            )}
+          >
+            {it.label}
+          </button>
+        ))}
+      </nav>
+      <div className="flex min-w-0 flex-1 flex-col gap-5">{children}</div>
+    </div>
+  );
+}

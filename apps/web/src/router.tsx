@@ -1,6 +1,7 @@
 import { createRootRoute, createRoute, createRouter } from '@tanstack/react-router';
 import { NAV_ITEMS } from '@workbench/shared';
 import { AppShell } from './components/AppShell.tsx';
+import { AiPage } from './pages/AiPage.tsx';
 import { CooperationsPage } from './pages/CooperationsPage.tsx';
 import { ContactsPage } from './pages/ContactsPage.tsx';
 import { HomePage } from './pages/HomePage.tsx';
@@ -24,6 +25,7 @@ const implemented: Record<string, () => JSX.Element> = {
   '/contacts': ContactsPage,
   '/review': ReviewPage,
   '/settings': SettingsPage,
+  '/ai': AiPage,
 };
 
 const routes = NAV_ITEMS.map((item) =>

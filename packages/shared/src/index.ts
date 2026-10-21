@@ -4,17 +4,19 @@ export * from './mask.ts';
 
 import { z } from 'zod';
 
-/** 左侧导航（顺序与 design/mockups 一致） */
+/** 左侧导航，按分组显示（日常 / 资料库 / 工具），分组只是小标题，不折叠 */
+export const NAV_GROUPS = ['日常', '资料库', '工具'] as const;
 export const NAV_ITEMS = [
-  { key: 'home', label: '首页', path: '/' },
-  { key: 'cooperations', label: '合作', path: '/cooperations' },
-  { key: 'influencers', label: '达人', path: '/influencers' },
-  { key: 'contacts', label: '联系人', path: '/contacts' },
-  { key: 'products', label: '商品', path: '/products' },
-  { key: 'samples', label: '寄样', path: '/samples' },
-  { key: 'review', label: '审核', path: '/review' },
-  { key: 'import', label: '导入', path: '/import' },
-  { key: 'settings', label: '设置', path: '/settings' },
+  { key: 'home', label: '首页', path: '/', group: '日常' },
+  { key: 'cooperations', label: '合作', path: '/cooperations', group: '日常' },
+  { key: 'samples', label: '寄样', path: '/samples', group: '日常' },
+  { key: 'review', label: '审核', path: '/review', group: '日常' },
+  { key: 'influencers', label: '达人', path: '/influencers', group: '资料库' },
+  { key: 'contacts', label: '联系人', path: '/contacts', group: '资料库' },
+  { key: 'products', label: '商品', path: '/products', group: '资料库' },
+  { key: 'import', label: '导入', path: '/import', group: '工具' },
+  { key: 'ai', label: 'AI 助手', path: '/ai', group: '工具' },
+  { key: 'settings', label: '设置', path: '/settings', group: '工具' },
 ] as const;
 
 export const healthSchema = z.object({

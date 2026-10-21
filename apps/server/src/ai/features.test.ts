@@ -131,7 +131,7 @@ describe('首页 AI 摘要', () => {
     });
     const res = await (await app.request('/api/ai/summary')).json();
     expect(res.available).toBe(false);
-    expect(res.message).toContain('设置');
+    expect(res.message).toContain('AI 助手 → 模型');
   });
 });
 

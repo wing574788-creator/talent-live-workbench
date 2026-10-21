@@ -69,13 +69,13 @@ export class ModelResolver {
     const ref = cfg.purposes[purpose];
     if (!ref)
       throw new AiNotConfigured(
-        `还没有为「${PURPOSE_LABELS[purpose]}」指定模型。到「设置 → 模型」里添加提供方、填入 API Key 并指定用途。`,
+        `还没有为「${PURPOSE_LABELS[purpose]}」指定模型。到「AI 助手 → 模型」里添加提供方、填入 API Key 并指定用途。`,
       );
     const provider = cfg.providers.find((p) => p.id === ref.provider);
     if (!provider) throw new AiNotConfigured('指定的模型提供方已被删除，请重新选择');
     if (provider.kind !== 'ollama' && !this.store.hasKey(provider.id)) {
       throw new AiNotConfigured(
-        `「${provider.label}」还没有填写 API Key，到「设置 → 模型」里填写。`,
+        `「${provider.label}」还没有填写 API Key，到「AI 助手 → 模型」里填写。`,
       );
     }
     const modelRuntime = await this.runtime();

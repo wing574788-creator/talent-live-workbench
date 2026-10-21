@@ -23,6 +23,11 @@
   --radius-card: 28px;
 }
 
+/* 始终预留纵向滚动条的位置：长页面和短页面切换时版心不会横向跳动 */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
   background: var(--color-bg);

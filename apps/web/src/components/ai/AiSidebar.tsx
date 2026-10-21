@@ -10,7 +10,7 @@ import { DiffTable, type FieldDiff } from '../Diff.tsx';
 import { useAction } from '../detail.tsx';
 import { Badge, Button, Modal, Textarea, cx, useToast } from '../ui.tsx';
 import { useAiPanel } from './AiPanel.tsx';
-import { useAiConfig } from './AiSettings.tsx';
+import { useAiConfig, useAiFeature } from './AiSettings.tsx';
 import { useOpenRecord } from './RecordHost.tsx';
 
 interface UiMessage {
@@ -48,6 +48,12 @@ export function AiSidebar({ onClose }: { onClose: () => void }) {
   const selected = useSelected();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [mode, setMode] = useState<Mode>('extract');
+  // 用户在「AI 助手 → 权限」里关掉的功能，侧栏上不再出现入口
+  const chatOn = useAiFeature('chat');
+  const ocrOn = useAiFeature('ocr');
+  useEffect(() => {
+    if (!chatOn && mode === 'chat') setMode('extract');
+  }, [chatOn, mode]);
   const [messages, setMessages] = useState<UiMessage[]>([]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -64,6 +70,7 @@ export function AiSidebar({ onClose }: { onClose: () => void }) {
 
   /** 截图先在本机识别成文字；图片不会发给模型，文字由你确认后才发送 */
   async function readScreenshot(file: File) {
+    if (!ocrOn) return;
     setReading(true);
     try {
       const res = await uploadFile('/ai/ocr', file);
@@ -198,6 +205,26 @@ export function AiSidebar({ onClose }: { onClose: () => void }) {
       <div className="flex items-center justify-between gap-2 px-4 pb-2 pt-4">
         <h2 className="m-0 text-base font-bold">AI 助手</h2>
         <div className="flex gap-1.5">
+          <Link
+            to="/ai"
+            title="AI 助手设置：权限、模型、外发规则"
+            aria-label="AI 助手设置"
+            className="flex size-8 items-center justify-center rounded-xl border border-line-strong text-ink-2 no-underline hover:bg-bg"
+          >
+            <svg
+              aria-hidden="true"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" />
+            </svg>
+          </Link>
           <Button className="!min-h-8 !px-2.5" onClick={reset} disabled={!messages.length}>
             新对话
           </Button>
@@ -213,23 +240,25 @@ export function AiSidebar({ onClose }: { onClose: () => void }) {
             ['extract', '录入'],
             ['chat', '问答'],
           ] as const
-        ).map(([k, label]) => (
-          <button
-            key={k}
-            role="tab"
-            aria-selected={mode === k}
-            type="button"
-            onClick={() => setMode(k)}
-            className={cx(
-              'min-h-8 flex-1 cursor-pointer rounded-xl border-0 text-sm',
-              mode === k
-                ? 'bg-surface font-medium text-brand shadow-sm'
-                : 'bg-transparent text-muted',
-            )}
-          >
-            {label}
-          </button>
-        ))}
+        )
+          .filter(([k]) => k !== 'chat' || chatOn)
+          .map(([k, label]) => (
+            <button
+              key={k}
+              role="tab"
+              aria-selected={mode === k}
+              type="button"
+              onClick={() => setMode(k)}
+              className={cx(
+                'min-h-8 flex-1 cursor-pointer rounded-xl border-0 text-sm',
+                mode === k
+                  ? 'bg-surface font-medium text-brand shadow-sm'
+                  : 'bg-transparent text-muted',
+              )}
+            >
+              {label}
+            </button>
+          ))}
       </div>
       <p className="mx-4 mb-0 mt-1.5 text-xs text-muted">
         {mode === 'extract'
@@ -240,9 +269,9 @@ export function AiSidebar({ onClose }: { onClose: () => void }) {
       {!configured && (
         <div className="mx-4 mt-3 rounded-2xl bg-brand-soft px-4 py-3 text-[13px]">
           还没有配置 AI 模型。到{' '}
-          <Link to="/settings" className="text-brand">
-            设置 → AI 模型
-          </Link>{' '}
+          <a href="/ai?tab=models" className="text-brand">
+            AI 助手 → 模型
+          </a>{' '}
           添加提供方并填入 API Key 后即可使用，其余功能不受影响。
         </div>
       )}
@@ -325,13 +354,15 @@ export function AiSidebar({ onClose }: { onClose: () => void }) {
               if (f) void readScreenshot(f);
             }}
           />
-          <Button
-            disabled={busy || reading}
-            onClick={() => fileRef.current?.click()}
-            title="上传或直接粘贴聊天截图，先在本机识别成文字"
-          >
-            {reading ? '识别中…' : '截图'}
-          </Button>
+          {ocrOn && (
+            <Button
+              disabled={busy || reading}
+              onClick={() => fileRef.current?.click()}
+              title="上传或直接粘贴聊天截图，先在本机识别成文字"
+            >
+              {reading ? '识别中…' : '截图'}
+            </Button>
+          )}
           <span className="flex-1" />
           {busy ? (
             <Button variant="danger" onClick={() => abortRef.current?.abort()}>

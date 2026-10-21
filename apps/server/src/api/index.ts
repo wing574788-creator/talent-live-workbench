@@ -71,6 +71,7 @@ export function createApi(domain: Domain, store: AttachmentStore, dataDir: strin
         invalid_state: 409,
         ai_not_configured: 400,
         outbound_blocked: 403,
+        ai_disabled: 403,
       }[err.code] as 400 | 404 | 409;
       return c.json({ error: err.message, code: err.code, details: err.details }, status);
     }

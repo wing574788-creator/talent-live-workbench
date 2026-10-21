@@ -9,6 +9,8 @@ import { DomainError } from '../domain/errors.ts';
 import { jsonBody } from '../api/util.ts';
 import { todayShanghai } from '../domain/automation.ts';
 import { suggestMappingWithAi } from './mapping.ts';
+import { assertFeature, featureEnabled, loadPermissions, savePermissions } from './permissions.ts';
+import { AI_FEATURES, AI_PROPOSE_TOOLS, AI_WRITE_TOOLS } from '@workbench/shared';
 import {
   KIND_DEFAULT_REGION,
   PROVIDER_KINDS,
@@ -186,9 +188,14 @@ export function createAiApi(ai: AiContext, store: AttachmentStore) {
 
   // ───────────── 截图：本地 OCR（图片不外发，只有识别出的文字会在你确认后发送） ─────────────
   r.get('/ocr/status', async (c) =>
-    c.json({ engine: ai.ocr.engineName, ...(await ai.ocr.status()) }),
+    c.json({
+      engine: ai.ocr.engineName,
+      enabled: featureEnabled(loadPermissions(domain), 'ocr'),
+      ...(await ai.ocr.status()),
+    }),
   );
   r.post('/ocr', async (c) => {
+    assertFeature(domain, 'ocr');
     const form = await c.req.parseBody();
     const file = form['file'];
     if (!(file instanceof File)) throw new DomainError('validation', '请选择截图文件');
@@ -210,6 +217,12 @@ export function createAiApi(ai: AiContext, store: AttachmentStore) {
   // ───────────── 首页摘要、导入映射建议 ─────────────
   /** 当天的 AI 摘要（有缓存直接返回）；没配置模型时 available = false，首页继续显示规则概况 */
   r.get('/summary', async (c) => {
+    if (!featureEnabled(loadPermissions(domain), 'summary'))
+      return c.json({
+        available: false,
+        disabled: true,
+        message: '首页 AI 摘要已在「AI 助手 → 权限」里关闭。',
+      });
     try {
       const res = await ai.summary.get(todayShanghai(), c.req.query('refresh') === '1');
       return c.json({ available: true, ...res });
@@ -222,6 +235,7 @@ export function createAiApi(ai: AiContext, store: AttachmentStore) {
     }
   });
   r.post('/mapping-suggest', async (c) => {
+    assertFeature(domain, 'mapping');
     const { target, columns } = await jsonBody(c);
     if (!Array.isArray(columns)) throw new DomainError('validation', '缺少列信息');
     return c.json(
@@ -235,6 +249,19 @@ export function createAiApi(ai: AiContext, store: AttachmentStore) {
       }),
     );
   });
+
+  // ───────────── 权限（AI 助手 → 权限） ─────────────
+  r.get('/permissions', (c) =>
+    c.json({
+      permissions: loadPermissions(domain),
+      writeTools: AI_WRITE_TOOLS,
+      proposeTools: AI_PROPOSE_TOOLS,
+      features: AI_FEATURES,
+    }),
+  );
+  r.put('/permissions', async (c) =>
+    c.json({ permissions: savePermissions(domain, await jsonBody(c)) }),
+  );
 
   // ───────────── 外发规则与日志 ─────────────
   r.get('/outbound', (c) =>

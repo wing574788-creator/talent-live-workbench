@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, Outlet, useRouterState } from '@tanstack/react-router';
-import { NAV_ITEMS } from '@workbench/shared';
+import { NAV_GROUPS, NAV_ITEMS } from '@workbench/shared';
 import { motion } from 'motion/react';
 import type { ReactNode } from 'react';
 import { AiPanelProvider, useAiPanel } from './ai/AiPanel.tsx';
@@ -68,6 +68,12 @@ const ICONS: Record<string, ReactNode> = {
     </>,
   ),
   review: svg(<path d="M20 6L9 17l-5-5" />),
+  ai: svg(
+    <>
+      <path d="M12 3l1.8 4.9L18.7 9.7l-4.9 1.8L12 16.4l-1.8-4.9L5.3 9.7l4.9-1.8z" />
+      <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z" />
+    </>,
+  ),
   import: svg(<path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v3h16v-3" />),
   settings: svg(
     <>
@@ -104,9 +110,9 @@ function Shell() {
       >
         <nav
           aria-label="主导航"
-          className="sticky top-0 flex h-screen w-58 shrink-0 flex-col gap-1 border-r border-line bg-surface px-4 py-7"
+          className="sticky top-0 flex h-screen w-58 shrink-0 flex-col gap-0.5 overflow-y-auto border-r border-line bg-surface px-4 py-7"
         >
-          <div className="flex items-center gap-2.5 px-2.5 pb-6">
+          <div className="flex items-center gap-2.5 px-2.5 pb-4">
             <div className="flex size-9 items-center justify-center rounded-xl bg-ink">
               <svg
                 aria-hidden="true"
@@ -128,27 +134,34 @@ function Shell() {
               <span className="text-xs font-medium text-muted">工作台</span>
             </div>
           </div>
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.key}
-              to={item.path}
-              activeOptions={{ exact: item.path === '/' }}
-              className={navBase}
-              activeProps={{
-                className: `${navBase} bg-ink font-bold text-white [&_svg]:text-lime`,
-              }}
-              inactiveProps={{ className: `${navBase} text-ink-2 hover:bg-bg` }}
-            >
-              <span className="flex items-center gap-3">
-                {ICONS[item.key]}
-                {item.label}
-              </span>
-              {item.key === 'review' && pendingCount > 0 && (
-                <span className="min-w-5.5 rounded-full bg-[#ff6f59] px-1.5 text-center text-xs font-extrabold text-ink">
-                  {pendingCount}
-                </span>
-              )}
-            </Link>
+          {NAV_GROUPS.map((g) => (
+            <div key={g} className="flex flex-col gap-0.5">
+              <div className="px-3.5 pb-1 pt-4 text-[11px] font-bold tracking-wide text-muted">
+                {g}
+              </div>
+              {NAV_ITEMS.filter((i) => i.group === g).map((item) => (
+                <Link
+                  key={item.key}
+                  to={item.path}
+                  activeOptions={{ exact: item.path === '/' }}
+                  className={navBase}
+                  activeProps={{
+                    className: `${navBase} bg-ink font-bold text-white [&_svg]:text-lime`,
+                  }}
+                  inactiveProps={{ className: `${navBase} text-ink-2 hover:bg-bg` }}
+                >
+                  <span className="flex items-center gap-3">
+                    {ICONS[item.key]}
+                    {item.label}
+                  </span>
+                  {item.key === 'review' && pendingCount > 0 && (
+                    <span className="min-w-5.5 rounded-full bg-[#ff6f59] px-1.5 text-center text-xs font-extrabold text-ink">
+                      {pendingCount}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </div>
           ))}
           <div className="mt-auto rounded-2xl bg-bg px-3.5 py-3 text-xs leading-relaxed text-ink-2">
             <b className="text-ink">数据在本机</b>

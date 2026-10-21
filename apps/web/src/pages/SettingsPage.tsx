@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { PageHeader } from '../components/ui.tsx';
+import { PageHeader, SubNavLayout, useTabParam } from '../components/ui.tsx';
 import { useState } from 'react';
 import { CUSTOM_FIELD_ENTITIES, CUSTOM_FIELD_TYPES } from '@workbench/shared';
-import { ModelsCard, OutboundCard, OutboundLogCard } from '../components/ai/AiSettings.tsx';
 import { BackupCard } from '../components/BackupCard.tsx';
 import { ChangeLogPanel } from '../components/ChangeLog.tsx';
 import { TemplatesCard } from '../components/import/Templates.tsx';
@@ -28,19 +27,38 @@ const TYPE_LABEL: Record<string, string> = {
   bool: '是/否',
 };
 
+const SECTIONS = [
+  { key: 'follow', label: '跟进与样品' },
+  { key: 'templates', label: '导入模板' },
+  { key: 'fields', label: '自定义字段' },
+  { key: 'backup', label: '备份' },
+  { key: 'changelog', label: '变更日志' },
+] as const;
+type Section = (typeof SECTIONS)[number]['key'];
+
 export function SettingsPage() {
+  const [tab, setTab] = useTabParam<Section>(
+    SECTIONS.map((x) => x.key),
+    'follow',
+  );
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader title="设置" hint="模型、外发规则、预警天数、备份和自定义字段" />
-      <FollowStatuses />
-      <SampleDays />
-      <ModelsCard />
-      <OutboundCard />
-      <OutboundLogCard />
-      <TemplatesCard />
-      <BackupCard />
-      <ChangeLogPanel />
-      <CustomFields />
+      <PageHeader
+        title="设置"
+        hint="跟进与样品规则、导入模板、自定义字段、备份和变更日志；AI 相关的在「AI 助手」里"
+      />
+      <SubNavLayout label="设置分区" items={SECTIONS} value={tab} onChange={setTab}>
+        {tab === 'follow' && (
+          <>
+            <FollowStatuses />
+            <SampleDays />
+          </>
+        )}
+        {tab === 'templates' && <TemplatesCard />}
+        {tab === 'fields' && <CustomFields />}
+        {tab === 'backup' && <BackupCard />}
+        {tab === 'changelog' && <ChangeLogPanel />}
+      </SubNavLayout>
     </div>
   );
 }

@@ -7,7 +7,8 @@ export class DomainError extends Error {
       | 'duplicate'
       | 'invalid_state'
       | 'ai_not_configured'
-      | 'outbound_blocked',
+      | 'outbound_blocked'
+      | 'ai_disabled',
     message: string,
     public readonly details?: unknown,
   ) {

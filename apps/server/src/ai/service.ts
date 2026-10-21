@@ -17,6 +17,8 @@ import { OutboundGuard } from './outbound.ts';
 import { READ_ONLY_TOOLS, buildSystemPrompt, type ChatMode } from './prompt.ts';
 import { AiRun, type Card, type RunContext } from './run.ts';
 import { buildTools } from './tools.ts';
+import { assertFeature, loadPermissions, toolAllowed } from './permissions.ts';
+import { AI_PROPOSE_TOOLS, AI_WRITE_TOOLS } from '@workbench/shared';
 
 /** 推给侧栏的事件 */
 export type ChatEvent =
@@ -179,6 +181,7 @@ export class AiService {
     const text = req.text.trim();
     try {
       if (!text) throw new DomainError('validation', '请先输入内容');
+      if (req.mode === 'chat') assertFeature(d, 'chat');
       const purpose = req.mode === 'chat' ? 'chat' : 'extract';
       const resolved = await this.ai.resolver.resolve(purpose);
       assertTargetAllowed(d, { provider: resolved.provider, modelId: resolved.modelId, purpose });
@@ -225,9 +228,17 @@ export class AiService {
         sourceAttachmentId: req.sourceAttachmentId,
         emit: (card) => emit({ type: 'card', card }),
       });
+      const perms = loadPermissions(d);
       const tools = buildTools(run).filter(
-        (t) => req.mode === 'extract' || READ_ONLY_TOOLS.has(t.name),
+        (t) =>
+          (req.mode === 'extract' || READ_ONLY_TOOLS.has(t.name)) && toolAllowed(perms, t.name),
       );
+      const disabled =
+        req.mode === 'extract'
+          ? Object.entries({ ...AI_WRITE_TOOLS, ...AI_PROPOSE_TOOLS })
+              .filter(([k]) => !toolAllowed(perms, k))
+              .map(([, v]) => v)
+          : [];
       const sel = req.context?.selected;
       const selectedLabel = sel ? this.selectedLabel(sel.type, sel.id, guard) : undefined;
 
@@ -243,6 +254,7 @@ export class AiService {
           now: req.now,
           context: req.context,
           selectedLabel,
+          disabled,
         }),
         outboundFilter: createOutboundFilter(d, {
           provider: resolved.provider,

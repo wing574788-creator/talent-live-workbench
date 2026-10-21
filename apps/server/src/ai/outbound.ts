@@ -146,7 +146,7 @@ export function assertRegionAllowed(policy: OutboundPolicy, region: Region, labe
   if (!policy.allowOutbound)
     throw new DomainError(
       'outbound_blocked',
-      `外发设置里关闭了"允许外发"，「${label}」是云端模型，不能使用。请改用本地模型，或在设置里开启外发。`,
+      `外发设置里关闭了"允许外发"，「${label}」是云端模型，不能使用。请改用本地模型，或在「AI 助手 → 外发规则」里开启外发。`,
     );
   if (policy.region === 'local')
     throw new DomainError(

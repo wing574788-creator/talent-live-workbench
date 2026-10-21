@@ -164,7 +164,7 @@ describe('对话接口', () => {
     const body = await res.text();
     expect(body).toContain('event: error');
     expect(body).toContain('ai_not_configured');
-    expect(body).toContain('设置');
+    expect(body).toContain('AI 助手 → 模型');
   });
 
   it('审核卡片上改字段：PATCH /review/:id', async () => {

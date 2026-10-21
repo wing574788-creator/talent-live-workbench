@@ -1,7 +1,7 @@
 /**
  * 手动演示用：启动一个假的 OpenAI 兼容接口（默认 http://127.0.0.1:18788/v1），按关键词模拟几种典型对话，
  * 方便没有真实 API Key 时在页面上看 AI 侧栏的效果。用法：pnpm --filter @workbench/server ai:mock
- * 在「设置 → AI 模型」添加 OpenAI 兼容接口：地址填上面的 URL，模型 ID 填 mock-1，Key 随便填 8 位以上。
+ * 在「AI 助手 → 模型」添加 OpenAI 兼容接口：地址填上面的 URL，模型 ID 填 mock-1，Key 随便填 8 位以上。
  */
 import { startMockOpenAI, type MockReply } from './mock-openai.ts';
 

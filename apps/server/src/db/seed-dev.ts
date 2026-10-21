@@ -111,6 +111,8 @@ await post('/e/follow_up', {
   summary: '对方想把佣金谈到 25%',
   followStatus: '报价中',
   intent: '高',
+  // 洽谈中记跟进要带下次跟进日期；沿用合作上已逾期的日期，首页才有"逾期"示例
+  nextFollowDate: '2026-10-17',
 });
 // ── 样品台账示例 ──
 const infId = xm.influencer.id;

@@ -286,3 +286,43 @@ export const outboundLogSchema = obj({
   module: text.nullish(),
   payload: z.string(),
 });
+
+// ───────────── AI 助手权限（用户可在 AI 助手页自定义，只能在安全底线之上收紧） ─────────────
+/** 直接写入类工具：新增记录，可在卡片上撤销。可选"直接写入 / 不允许" */
+export const AI_WRITE_TOOLS = {
+  add_follow_up: '记跟进',
+  create_draft_cooperation: '建草稿合作',
+  create_sample_shipment_draft: '建寄样草稿',
+} as const;
+/** 提议类工具：一律生成待审核记录（铁律 3）。可选"允许提议 / 不允许" */
+export const AI_PROPOSE_TOOLS = {
+  propose_update: '改字段（含金额、佣金、日期）',
+  propose_stage_change: '改阶段',
+  propose_merge_influencers: '合并达人',
+  propose_delete: '删除',
+  propose_bulk_update: '批量修改',
+} as const;
+/** 功能开关 */
+export const AI_FEATURES = {
+  chat: '问答模式',
+  summary: '首页 AI 摘要',
+  mapping: '导入时 AI 建议映射',
+  ocr: '截图识别（本机 OCR）',
+} as const;
+export type AiToolKey = keyof typeof AI_WRITE_TOOLS | keyof typeof AI_PROPOSE_TOOLS;
+export type AiFeatureKey = keyof typeof AI_FEATURES;
+
+const toolKeys = [...Object.keys(AI_WRITE_TOOLS), ...Object.keys(AI_PROPOSE_TOOLS)] as [
+  AiToolKey,
+  ...AiToolKey[],
+];
+const featureKeys = Object.keys(AI_FEATURES) as [AiFeatureKey, ...AiFeatureKey[]];
+
+/** 没写的项一律视为允许（和加权限之前的行为一致）；false = 关闭 */
+export const aiPermissionsSchema = z
+  .object({
+    tools: z.record(z.enum(toolKeys), z.boolean()).default({}),
+    features: z.record(z.enum(featureKeys), z.boolean()).default({}),
+  })
+  .strict();
+export type AiPermissions = z.infer<typeof aiPermissionsSchema>;

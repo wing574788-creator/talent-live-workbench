@@ -29,6 +29,8 @@ export function buildSystemPrompt(opts: {
   now?: Date;
   context?: RunContext;
   selectedLabel?: string;
+  /** 用户在「AI 助手 → 权限」里关闭的能力（中文名） */
+  disabled?: string[];
 }): string {
   const t = currentTime(opts.now);
   const lines = [
@@ -58,6 +60,13 @@ export function buildSystemPrompt(opts: {
       '9. 哪些会直接写入、哪些要审核：新增跟进记录、新建草稿合作、新建寄样草稿会直接写入（用户可在卡片上撤销）；修改字段、改金额佣金、改阶段、合并达人、删除、批量修改都只生成"待审核"卡片。对后一类，要告诉用户"已生成待审核卡片"，不要说"已修改"。',
       '10. 典型的一句话录入：先 find_influencers/find_cooperations 确定目标 → add_follow_up 记录这次沟通（把下次跟进日期放进 nextFollowDateText）→ 有佣金/坑位费/开播日期变化用 propose_update → 要寄样用 create_sample_shipment_draft。原话里没提到的内容不要凭空补充。',
       '11. 全部处理完后，用 2~4 句话说明做了什么、哪些在等用户确认；日期写成绝对日期。',
+    );
+  }
+  if (opts.disabled?.length) {
+    lines.push(
+      '',
+      '【用户关闭的能力】',
+      `用户在「AI 助手 → 权限」里关闭了：${opts.disabled.join('、')}。你没有这些工具；用户要求做这些事时，如实说明已被关闭，可以到「AI 助手 → 权限」重新打开，或者让用户在页面上自己操作。`,
     );
   }
   const sel = opts.context?.selected;

@@ -101,7 +101,7 @@ describe('AI 会话服务', () => {
     const events = await send(ctx, { text: '你好', mode: 'chat' });
     expect(events).toHaveLength(1);
     expect(events[0]).toMatchObject({ type: 'error', code: 'ai_not_configured' });
-    expect((events[0] as { message: string }).message).toContain('设置 → 模型');
+    expect((events[0] as { message: string }).message).toContain('AI 助手 → 模型');
     expect(d.entity('outbound_log').list()).toHaveLength(0);
   });
 

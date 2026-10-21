@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { api, downloadFile } from '../../lib/api.ts';
 import { fmtDateTime } from '../../lib/format.ts';
 import { useAction } from '../detail.tsx';
@@ -535,4 +535,169 @@ function prettyPayload(s: string) {
   } catch {
     return s;
   }
+}
+
+// ───────────── 权限（只能在安全底线之上收紧） ─────────────
+interface PermissionsData {
+  permissions: { tools: Record<string, boolean>; features: Record<string, boolean> };
+  writeTools: Record<string, string>;
+  proposeTools: Record<string, string>;
+  features: Record<string, string>;
+}
+
+export const useAiPermissions = () =>
+  useQuery({
+    queryKey: ['ai-permissions'],
+    queryFn: () => api<PermissionsData>('GET', '/ai/permissions'),
+  });
+
+/** 某个 AI 功能是否开启（权限还没加载时按开启处理） */
+export function useAiFeature(key: 'chat' | 'summary' | 'mapping' | 'ocr') {
+  const q = useAiPermissions();
+  return q.data?.permissions.features[key] !== false;
+}
+
+function Segmented({
+  value,
+  options,
+  onChange,
+  label,
+}: {
+  value: boolean;
+  options: [string, string];
+  onChange: (v: boolean) => void;
+  label: string;
+}) {
+  return (
+    <div role="radiogroup" aria-label={label} className="flex shrink-0 rounded-xl bg-bg p-1">
+      {([true, false] as const).map((v, i) => (
+        <button
+          key={String(v)}
+          type="button"
+          role="radio"
+          aria-checked={value === v}
+          onClick={() => onChange(v)}
+          className={`min-h-8 cursor-pointer rounded-lg border-0 px-3 text-[13px] ${
+            value === v
+              ? v
+                ? 'bg-ink font-bold text-white'
+                : 'bg-warn-soft font-bold text-warn'
+              : 'bg-transparent text-ink-2'
+          }`}
+        >
+          {options[i]}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export function PermissionsCard() {
+  const run = useAction();
+  const q = useAiPermissions();
+  const outbound = useQuery({
+    queryKey: ['ai-outbound'],
+    queryFn: () => api<OutboundData>('GET', '/ai/outbound'),
+  });
+  const d = q.data;
+  if (!d) return null;
+  const p = d.permissions;
+  const save = (next: PermissionsData['permissions']) =>
+    run(() => api('PUT', '/ai/permissions', next), '已保存');
+  const setTool = (k: string, on: boolean) => {
+    const tools = { ...p.tools };
+    if (on) delete tools[k];
+    else tools[k] = false;
+    return save({ ...p, tools });
+  };
+  const setFeature = (k: string, on: boolean) => {
+    const features = { ...p.features };
+    if (on) delete features[k];
+    else features[k] = false;
+    return save({ ...p, features });
+  };
+  const row = (label: string, control: ReactNode, hint?: string) => (
+    <div
+      key={label}
+      className="flex flex-wrap items-center justify-between gap-3 border-t border-line py-2.5 first:border-0"
+    >
+      <span>
+        {label}
+        {hint && <span className="ml-2 text-[13px] text-muted">{hint}</span>}
+      </span>
+      {control}
+    </div>
+  );
+  const pol = outbound.data?.policy;
+  return (
+    <>
+      <div className="rounded-2xl bg-bg px-4 py-3 text-[13px] text-ink-2">
+        这里只能在安全底线之上收紧：发给模型的手机号、微信、地址、真实姓名一律先在本机脱敏；AI
+        提出的修改一律进审核，要你确认后才生效。
+      </div>
+      <Card title="写入">
+        <p className="mt-0 text-[13px] text-muted">
+          新增类（记跟进、建草稿）会直接写入，可在卡片上撤销；修改类只生成待审核记录。关掉的能力，AI
+          不会再用，被要求时会告诉你已关闭。
+        </p>
+        {Object.entries(d.writeTools).map(([k, label]) =>
+          row(
+            label,
+            <Segmented
+              label={label}
+              value={p.tools[k] !== false}
+              options={['直接写入', '不允许']}
+              onChange={(v) => setTool(k, v)}
+            />,
+          ),
+        )}
+        {Object.entries(d.proposeTools).map(([k, label]) =>
+          row(
+            label,
+            <Segmented
+              label={label}
+              value={p.tools[k] !== false}
+              options={['提议，进审核', '不允许']}
+              onChange={(v) => setTool(k, v)}
+            />,
+          ),
+        )}
+      </Card>
+      <Card title="能读哪些数据">
+        <p className="mt-0 text-[13px] text-muted">
+          关掉的模块，AI 查不到也不会发给模型；更细的字段级设置在「外发规则」里。
+        </p>
+        {pol &&
+          outbound.data!.catalog.map((m) =>
+            row(
+              m.label,
+              <Segmented
+                label={m.label}
+                value={pol.modules[m.key] !== 'deny'}
+                options={['可以读', '不允许']}
+                onChange={(v) => {
+                  const modules = { ...pol.modules };
+                  if (v) delete modules[m.key];
+                  else modules[m.key] = 'deny';
+                  return run(() => api('PUT', '/ai/outbound', { ...pol, modules }), '已保存');
+                }}
+              />,
+            ),
+          )}
+      </Card>
+      <Card title="功能开关">
+        {Object.entries(d.features).map(([k, label]) =>
+          row(
+            label,
+            <Segmented
+              label={label}
+              value={p.features[k] !== false}
+              options={['开启', '关闭']}
+              onChange={(v) => setFeature(k, v)}
+            />,
+          ),
+        )}
+      </Card>
+    </>
+  );
 }
